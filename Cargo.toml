@@ -1,5 +1,5 @@
 [package]
-name = "hdk-rust"
+name = "hdk"
 version = "0.0.0"
 authors = ["Nicolas Luck <nicolas.luck@holo.host>"]
 
