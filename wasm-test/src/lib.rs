@@ -1,13 +1,12 @@
+// https://github.com/rust-lang/rust/issues/29633
 #![no_main]
 #![no_std]
 #![feature(lang_items)]
 #![feature(start)]
-// https://github.com/rust-lang/rust/issues/29633
+
 
 extern crate hdk;
-
 extern crate holochain_wasm_utils;
-
 
 
 use holochain_wasm_utils::*;
@@ -21,12 +20,12 @@ pub extern "C" fn check_global_dispatch(encoded_allocation_of_input : i32) -> i3
   unsafe {
     g_mem_stack = Some(SinglePageStack::new_from_encoded(encoded_allocation_of_input as u32));
 
-    hdk::print_debug(&globals::APP_NAME.lock().unwrap());
-    hdk::print_debug(&globals::APP_DNA_HASH.lock().unwrap());
-    hdk::print_debug(&globals::APP_KEY_HASH.lock().unwrap());
-    hdk::print_debug(&globals::APP_AGENT_HASH.lock().unwrap());
-    hdk::print_debug(&globals::APP_AGENT_TOP_HASH.lock().unwrap());
-    hdk::print_debug(&globals::APP_AGENT_STR.lock().unwrap());
+    hdk::debug(&globals::APP_NAME.lock().unwrap());
+    hdk::debug(&globals::APP_DNA_HASH.lock().unwrap());
+    hdk::debug(&globals::APP_KEY_HASH.lock().unwrap());
+    hdk::debug(&globals::APP_AGENT_HASH.lock().unwrap());
+    hdk::debug(&globals::APP_AGENT_TOP_HASH.lock().unwrap());
+    hdk::debug(&globals::APP_AGENT_STR.lock().unwrap());
   }
   return 0;
 }
@@ -49,6 +48,6 @@ pub extern "C" fn main() -> i32 {
 
 #[no_mangle]
 pub extern "C" fn manual_start() -> i32 {
-  //init_globals();
+  init_globals();
   return 0;
 }

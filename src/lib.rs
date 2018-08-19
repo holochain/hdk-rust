@@ -15,14 +15,11 @@ pub mod init_globals;
 
 use globals::ErrorCode;
 use globals::g_mem_stack;
+use globals::HashString;
 
 extern {
     fn hc_debug(encoded_allocation_of_input: i32) -> i32;
 }
-
-
-
-type HashString = String;
 
 
 //--------------------------------------------------------------------------------------------------

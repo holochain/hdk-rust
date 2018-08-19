@@ -4,6 +4,7 @@ use holochain_wasm_utils::SinglePageAllocation;
 use holochain_wasm_utils::try_deserialize_allocation;
 use globals;
 use globals::g_mem_stack;
+use globals::HashString;
 
 extern {
   fn hc_init_globals(encoded_allocation_of_input: i32) -> i32;
@@ -32,10 +33,10 @@ struct InitGlobalsOutput {
 fn set_globals(globals : InitGlobalsOutput) {
   unsafe {
     *globals::APP_NAME.lock().unwrap() = globals.app_name;
-    *globals::APP_DNA_HASH.lock().unwrap() = globals.app_dna_hash;
-    *globals::APP_KEY_HASH.lock().unwrap() = globals.app_key_hash;
-    *globals::APP_AGENT_HASH.lock().unwrap() = globals.app_agent_hash;
-    *globals::APP_AGENT_TOP_HASH.lock().unwrap() = globals.app_agent_top_hash;
+    *globals::APP_DNA_HASH.lock().unwrap() = globals.app_dna_hash as HashString;
+    *globals::APP_KEY_HASH.lock().unwrap() = globals.app_key_hash as HashString;
+    *globals::APP_AGENT_HASH.lock().unwrap() = globals.app_agent_hash as HashString;
+    *globals::APP_AGENT_TOP_HASH.lock().unwrap() = globals.app_agent_top_hash as HashString;
     *globals::APP_AGENT_STR.lock().unwrap() = globals.app_agent_str;
   }
 }

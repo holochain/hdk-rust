@@ -2,6 +2,8 @@
 use holochain_wasm_utils::SinglePageStack;
 use std::sync::Mutex;
 
+pub type HashString = String;
+
 //--------------------------------------------------------------------------------------------------
 // ZOME APP GLOBALS
 //--------------------------------------------------------------------------------------------------
@@ -9,10 +11,10 @@ use std::sync::Mutex;
 // From https://github.com/rust-lang-nursery/lazy-static.rs/issues/56
 lazy_static! {
   pub static ref APP_NAME : Mutex<String> = Mutex::new("1".to_string());
-  pub static ref APP_DNA_HASH : Mutex<String> = Mutex::new("2".to_string());
-  pub static ref APP_KEY_HASH : Mutex<String> = Mutex::new("3".to_string());
-  pub static ref APP_AGENT_HASH : Mutex<String> = Mutex::new("4".to_string());
-  pub static ref APP_AGENT_TOP_HASH : Mutex<String> = Mutex::new("5".to_string());
+  pub static ref APP_DNA_HASH : Mutex<HashString> = Mutex::new("2".to_string());
+  pub static ref APP_KEY_HASH : Mutex<HashString> = Mutex::new("3".to_string());
+  pub static ref APP_AGENT_HASH : Mutex<HashString> = Mutex::new("4".to_string());
+  pub static ref APP_AGENT_TOP_HASH : Mutex<HashString> = Mutex::new("5".to_string());
   pub static ref APP_AGENT_STR : Mutex<String> = Mutex::new("6".to_string());
 }
 
