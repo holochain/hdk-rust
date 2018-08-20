@@ -7,7 +7,7 @@ fn genesis()
         {
             "content": hdk::APP_AGENT_STR,
             "version": hdk::VERSION_STR,
-            "app": hdk::App::NAME,
+            "app": hdk::APP_NAME,
         }
     ));
 

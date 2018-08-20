@@ -1,3 +1,4 @@
+// File for holding the internal/private zome api function 'init_globals'
 
 use holochain_wasm_utils::try_deserialize_allocation;
 
@@ -7,7 +8,7 @@ extern {
 
 // WARNING must be in sync with InitGlobalsOutput in core
 #[derive(Deserialize, Clone)]
-pub struct InitGlobalsOutput {
+pub struct AppGlobals {
   pub app_name: String,
   pub app_dna_hash: String,
   pub app_key_hash: String,
@@ -17,7 +18,7 @@ pub struct InitGlobalsOutput {
 }
 
 // HC INIT GLOBALS - Secret Api Function
-pub fn init_globals() -> InitGlobalsOutput {
+pub fn init_globals() -> AppGlobals {
   // Call WASMI-able init_globals
   let encoded_allocation_of_result : i32;
   unsafe {
@@ -26,7 +27,7 @@ pub fn init_globals() -> InitGlobalsOutput {
   // Deserialize complex result stored in memory
   let result = try_deserialize_allocation(encoded_allocation_of_result as u32);
   if result.is_err() {
-    panic!("InitGlobalsOutput should deserialize properly");
+    panic!("AppGlobals should deserialize properly");
   }
   result.unwrap()
 }
