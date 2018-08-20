@@ -18,7 +18,7 @@ use globals::g_mem_stack;
 use globals::APP_GLOBALS;
 
 extern {
-    fn hc_debug(encoded_allocation_of_input: i32) -> i32;
+  fn hc_debug(encoded_allocation_of_input: i32) -> i32;
 }
 
 pub type HashString = String;
@@ -28,7 +28,7 @@ pub type HashString = String;
 //--------------------------------------------------------------------------------------------------
 
 lazy_static! {
-  /// The name of this Holochain from the DNA.
+  /// The name of this Holochain taken from its DNA.
   pub static ref APP_NAME: String = APP_GLOBALS.clone().app_name;
 
   /// The hash of this Holochain's DNA.
@@ -37,7 +37,7 @@ lazy_static! {
 
   /// The identity string used to initialize this Holochain with `hcadmin init`.
   /// If you used JSON to embed multiple properties (such as FirstName, LastName, Email, etc),
-  /// they can be retrieved here as App.Agent.FirstName, etc.
+  /// they can be retrieved here as App.Agent.FirstName, etc. (FIXME)
   pub static ref APP_AGENT_ID_STR: String = APP_GLOBALS.clone().app_agent_id_str;
 
   /// The hash of your public key.
@@ -68,8 +68,8 @@ const VERSION_STR : &'static str = "1";
 // HC.HashNotFound
 // FIXME keep in sync with HcApiReturnCode?
 pub enum ErrorCode {
-    FunctionNotImplemented,
-    HashNotFound,
+  FunctionNotImplemented,
+  HashNotFound,
 }
 
 

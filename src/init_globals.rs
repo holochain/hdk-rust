@@ -1,4 +1,4 @@
-// File for holding the internal/private zome api function 'init_globals'
+// File for holding the internal/private zome api function `init_globals`
 
 use holochain_wasm_utils::try_deserialize_allocation;
 
@@ -18,6 +18,7 @@ pub struct AppGlobals {
 }
 
 // HC INIT GLOBALS - Secret Api Function
+// Retrieve all the public global values from the ribosome
 pub fn init_globals() -> AppGlobals {
   // Call WASMI-able init_globals
   let encoded_allocation_of_result : i32;
