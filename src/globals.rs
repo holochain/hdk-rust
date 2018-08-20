@@ -1,6 +1,7 @@
 
 use holochain_wasm_utils::SinglePageStack;
-use std::sync::Mutex;
+use init_globals::init_globals;
+use init_globals::InitGlobalsOutput;
 
 pub type HashString = String;
 
@@ -8,24 +9,20 @@ pub type HashString = String;
 // ZOME APP GLOBALS
 //--------------------------------------------------------------------------------------------------
 
-// From https://github.com/rust-lang-nursery/lazy-static.rs/issues/56
 lazy_static! {
-  pub static ref APP_NAME : Mutex<String> = Mutex::new("1".to_string());
-  pub static ref APP_DNA_HASH : Mutex<HashString> = Mutex::new("2".to_string());
-  pub static ref APP_KEY_HASH : Mutex<HashString> = Mutex::new("3".to_string());
-  pub static ref APP_AGENT_HASH : Mutex<HashString> = Mutex::new("4".to_string());
-  pub static ref APP_AGENT_TOP_HASH : Mutex<HashString> = Mutex::new("5".to_string());
-  pub static ref APP_AGENT_STR : Mutex<String> = Mutex::new("6".to_string());
+  pub static ref APP_GLOBALS: InitGlobalsOutput = init_globals();
+
+  pub static ref APP_NAME: String               = APP_GLOBALS.clone().app_name;
+  pub static ref APP_DNA_HASH: HashString       = APP_GLOBALS.clone().app_dna_hash;
+  pub static ref APP_KEY_HASH: HashString       = APP_GLOBALS.clone().app_key_hash;
+  pub static ref APP_AGENT_HASH: HashString     = APP_GLOBALS.clone().app_agent_hash;
+  pub static ref APP_AGENT_TOP_HASH: HashString = APP_GLOBALS.clone().app_agent_top_hash;
+  pub static ref APP_AGENT_STR: String          = APP_GLOBALS.clone().app_agent_str;
 }
 
-//pub static mut APP_NAME : &'static str = "un";
-//pub static mut APP_DNA_HASH : &'static str = "deux";
-//pub static mut APP_KEY_HASH : &'static str = "trois";
-//pub static mut APP_AGENT_HASH : &'static str = "quatre";
-//pub static mut APP_AGENT_TOP_HASH : &'static str = "cinq";
-//pub static mut APP_AGENT_STR : &'static str = "six";
-
+// Internal global for memory usage
 pub static mut g_mem_stack : Option<SinglePageStack> = None;
+
 
 //--------------------------------------------------------------------------------------------------
 // ZOME SYSTEM CONSTS
