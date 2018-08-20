@@ -1,4 +1,4 @@
-// File for holding the internal/private zome api function `init_globals`
+//! File for holding the internal/private zome api function `init_globals`
 
 use holochain_wasm_utils::try_deserialize_allocation;
 

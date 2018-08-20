@@ -1,4 +1,4 @@
-// File for holding all internal/private globals used by the zome api library
+//! File for holding all internal/private globals used by the zome api library
 
 use holochain_wasm_utils::SinglePageStack;
 use init_globals::init_globals;
