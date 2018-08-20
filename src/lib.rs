@@ -8,14 +8,12 @@ extern crate serde_derive;
 extern crate bitflags;
 #[macro_use]
 extern crate lazy_static;
-
 extern crate holochain_wasm_utils;
-
-use holochain_wasm_utils::*;
 
 pub mod globals;
 pub mod init_globals;
 
+use holochain_wasm_utils::*;
 use globals::g_mem_stack;
 use globals::APP_GLOBALS;
 
@@ -26,16 +24,35 @@ extern {
 pub type HashString = String;
 
 //--------------------------------------------------------------------------------------------------
-// APP GLOBALS
+// APP GLOBAL VARIABLES
 //--------------------------------------------------------------------------------------------------
 
 lazy_static! {
-  pub static ref APP_NAME: String               = APP_GLOBALS.clone().app_name;
-  pub static ref APP_DNA_HASH: HashString       = APP_GLOBALS.clone().app_dna_hash;
-  pub static ref APP_KEY_HASH: HashString       = APP_GLOBALS.clone().app_key_hash;
-  pub static ref APP_AGENT_HASH: HashString     = APP_GLOBALS.clone().app_agent_hash;
-  pub static ref APP_AGENT_TOP_HASH: HashString = APP_GLOBALS.clone().app_agent_top_hash;
-  pub static ref APP_AGENT_STR: String          = APP_GLOBALS.clone().app_agent_str;
+  /// The name of this Holochain from the DNA.
+  pub static ref APP_NAME: String = APP_GLOBALS.clone().app_name;
+
+  /// The hash of this Holochain's DNA.
+  /// Nodes must run the same DNA to be on the same DHT.
+  pub static ref APP_DNA_HASH: HashString = APP_GLOBALS.clone().app_dna_hash;
+
+  /// The identity string used to initialize this Holochain with `hcadmin init`.
+  /// If you used JSON to embed multiple properties (such as FirstName, LastName, Email, etc),
+  /// they can be retrieved here as App.Agent.FirstName, etc.
+  pub static ref APP_AGENT_ID_STR: String = APP_GLOBALS.clone().app_agent_id_str;
+
+  /// The hash of your public key.
+  /// This is your node address on the DHT.
+  /// It can be used for node-to-node messaging with `send` and `receive` functions.
+  pub static ref APP_AGENT_KEY_HASH: HashString = APP_GLOBALS.clone().app_agent_key_hash;
+
+  /// The hash of the first identity entry on your chain (The second entry on your chain).
+  /// This is your peer's identity on the DHT.
+  pub static ref APP_AGENT_INITIAL_HASH: HashString = APP_GLOBALS.clone().app_agent_initial_hash;
+
+  /// The hash of the most recent identity entry that has been committed to your chain.
+  /// Starts with the same value as APP_AGENT_INITIAL_HASH.
+  /// After a call to `update_agent` it will have the value of the hash of the newly committed identity entry.
+  pub static ref APP_AGENT_LATEST_HASH: HashString = APP_GLOBALS.clone().app_agent_latest_hash;
 }
 
 

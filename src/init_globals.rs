@@ -11,10 +11,10 @@ extern {
 pub struct AppGlobals {
   pub app_name: String,
   pub app_dna_hash: String,
-  pub app_key_hash: String,
-  pub app_agent_hash: String,
-  pub app_agent_top_hash: String,
-  pub app_agent_str: String,
+  pub app_agent_id_str: String,
+  pub app_agent_key_hash: String,
+  pub app_agent_initial_hash: String,
+  pub app_agent_latest_hash: String,
 }
 
 // HC INIT GLOBALS - Secret Api Function
