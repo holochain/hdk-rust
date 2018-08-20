@@ -14,5 +14,5 @@ lto = true
 members = []
 
 [dependencies]
-holochain_wasm_utils = { path = "C:/github/holochain-rust/wasm_utils"}
+holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", path = "wasm_utils" }
 hdk = { path = ".." }
