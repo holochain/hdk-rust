@@ -102,15 +102,15 @@ bitflags! {
 
 // HC.GetMask
 bitflags! {
-  pub struct GetMask: u8 {
+  pub struct GetEntryMask: u8 {
     const ENTRY      = 1 << 0;
     const ENTRY_TYPE = 1 << 1;
     const SOURCES    = 1 << 2;
   }
 }
 // explicit `Default` implementation
-impl Default for GetMask {
-    fn default() -> GetMask {
+impl Default for GetEntryMask {
+    fn default() -> GetEntryMask {
         GetMask::ENTRY
     }
 }
@@ -148,6 +148,7 @@ pub enum BridgeSide {
 
 
 // HC.SysEntryType
+// WARNING Keep in sync with SystemEntryType in holochain-rust
 enum SystemEntryType {
     DNA,
     AGENT,
