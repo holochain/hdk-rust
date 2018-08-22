@@ -8,7 +8,7 @@ extern {
 
 // WARNING must be in sync with InitGlobalsOutput in core
 #[derive(Deserialize, Clone)]
-pub struct AppGlobals {
+pub(crate) struct AppGlobals {
   pub app_name: String,
   pub app_dna_hash: String,
   pub app_agent_id_str: String,
@@ -19,7 +19,7 @@ pub struct AppGlobals {
 
 // HC INIT GLOBALS - Secret Api Function
 // Retrieve all the public global values from the ribosome
-pub fn init_globals() -> AppGlobals {
+pub(crate) fn init_globals() -> AppGlobals {
   // Call WASMI-able init_globals
   let encoded_allocation_of_result : i32;
   unsafe {

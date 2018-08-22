@@ -111,7 +111,7 @@ bitflags! {
 // explicit `Default` implementation
 impl Default for GetEntryMask {
     fn default() -> GetEntryMask {
-        GetMask::ENTRY
+        GetEntryMask::ENTRY
     }
 }
 
@@ -201,13 +201,12 @@ pub fn make_hash<S: Into<String>>(_entry_type : S, _entry_data: serde_json::Valu
 
 /// FIXME DOC
 pub fn debug(msg: &str) {
-    unsafe {
-        let mut mem_stack = g_mem_stack.unwrap();
-        let allocation_of_input =  serialize(&mut mem_stack, msg);
-        hc_debug(allocation_of_input.encode() as i32);
-        mem_stack.deallocate(allocation_of_input)
-          .expect("should be able to deallocate input that has been allocated on memory stack");
-    }
+  let mut mem_stack: SinglePageStack;
+  unsafe { mem_stack = g_mem_stack.unwrap(); }
+  let allocation_of_input =  serialize(&mut mem_stack, msg);
+  unsafe { hc_debug(allocation_of_input.encode() as i32); }
+  mem_stack.deallocate(allocation_of_input)
+    .expect("should be able to deallocate input that has been allocated on memory stack");
 }
 
 

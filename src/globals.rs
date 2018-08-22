@@ -9,5 +9,5 @@ pub static mut g_mem_stack : Option<SinglePageStack> = None;
 
 // Internal global for retrieving all app globals
 lazy_static! {
-  pub static ref APP_GLOBALS: AppGlobals = init_globals();
+  pub(crate) static ref APP_GLOBALS: AppGlobals = init_globals();
 }
