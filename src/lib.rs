@@ -14,27 +14,7 @@ pub mod globals;
 pub mod init_globals;
 
 use holochain_wasm_utils::*;
-use globals::g_mem_stack;
-use globals::APP_GLOBALS;
-
-extern {
-    fn hc_property(encoded_allocation_of_input: i32) -> i32;
-    fn hc_make_hash(encoded_allocation_of_input: i32) -> i32;
-    fn hc_debug(encoded_allocation_of_input: i32) -> i32;
-    fn hc_call(encoded_allocation_of_input: i32) -> i32;
-    fn hc_sign(encoded_allocation_of_input: i32) -> i32;
-    fn hc_verify_signature(encoded_allocation_of_input: i32) -> i32;
-    fn hc_commit_entry(encoded_allocation_of_input: i32) -> i32;
-    fn hc_update_entry(encoded_allocation_of_input: i32) -> i32;
-    fn hc_remove_entry(encoded_allocation_of_input: i32) -> i32;
-    fn hc_get_entry(encoded_allocation_of_input: i32) -> i32;
-    fn hc_link_entries(encoded_allocation_of_input: i32) -> i32;
-    fn hc_get_links(encoded_allocation_of_input: i32) -> i32;
-    fn hc_query(encoded_allocation_of_input: i32) -> i32;
-    fn hc_send(encoded_allocation_of_input: i32) -> i32;
-    fn hc_start_bundle(encoded_allocation_of_input: i32) -> i32;
-    fn hc_close_bundle(encoded_allocation_of_input: i32) -> i32;
-}
+use globals::*;
 
 pub type HashString = String;
 
