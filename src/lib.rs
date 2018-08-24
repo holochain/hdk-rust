@@ -24,30 +24,30 @@ pub type HashString = String;
 
 lazy_static! {
   /// The name of this Holochain taken from its DNA.
-  pub static ref APP_NAME: String = APP_GLOBALS.app_name.clone();
+  pub static ref APP_NAME: &'static str = &APP_GLOBALS.app_name;
 
   /// The hash of this Holochain's DNA.
   /// Nodes must run the same DNA to be on the same DHT.
-  pub static ref APP_DNA_HASH: HashString = APP_GLOBALS.app_dna_hash.clone();
+  pub static ref APP_DNA_HASH: &'static HashString = &APP_GLOBALS.app_dna_hash;
 
   /// The identity string used to initialize this Holochain with `hcadmin init`.
   /// If you used JSON to embed multiple properties (such as FirstName, LastName, Email, etc),
   /// they can be retrieved here as App.Agent.FirstName, etc. (FIXME)
-  pub static ref APP_AGENT_ID_STR: String = APP_GLOBALS.app_agent_id_str.clone();
+  pub static ref APP_AGENT_ID_STR: &'static str = &APP_GLOBALS.app_agent_id_str;
 
   /// The hash of your public key.
   /// This is your node address on the DHT.
   /// It can be used for node-to-node messaging with `send` and `receive` functions.
-  pub static ref APP_AGENT_KEY_HASH: HashString = APP_GLOBALS.app_agent_key_hash.clone();
+  pub static ref APP_AGENT_KEY_HASH: &'static HashString = &APP_GLOBALS.app_agent_key_hash;
 
   /// The hash of the first identity entry on your chain (The second entry on your chain).
   /// This is your peer's identity on the DHT.
-  pub static ref APP_AGENT_INITIAL_HASH: HashString = APP_GLOBALS.app_agent_initial_hash.clone();
+  pub static ref APP_AGENT_INITIAL_HASH: &'static HashString = &APP_GLOBALS.app_agent_initial_hash;
 
   /// The hash of the most recent identity entry that has been committed to your chain.
   /// Starts with the same value as APP_AGENT_INITIAL_HASH.
   /// After a call to `update_agent` it will have the value of the hash of the newly committed identity entry.
-  pub static ref APP_AGENT_LATEST_HASH: HashString = APP_GLOBALS.app_agent_latest_hash.clone();
+  pub static ref APP_AGENT_LATEST_HASH: &'static HashString = &APP_GLOBALS.app_agent_latest_hash;
 }
 
 
