@@ -1,0 +1,18 @@
+[package]
+name = "test-globals"
+version = "0.1.0"
+authors = [""]
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+panic = "abort"
+lto = true
+
+[workspace]
+members = []
+
+[dependencies]
+holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust" , branch = "develop" }
+hdk = { path = ".." }
