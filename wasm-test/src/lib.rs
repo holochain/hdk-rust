@@ -6,9 +6,9 @@ use holochain_wasm_utils::*;
 use hdk::globals::g_mem_stack;
 
 #[no_mangle]
-pub extern "C" fn check_global_dispatch(encoded_allocation_of_input : i32) -> i32 {
+pub extern "C" fn check_global_dispatch(encoded_allocation_of_input : u32) -> u32 {
   unsafe {
-    g_mem_stack = Some(SinglePageStack::new_from_encoded(encoded_allocation_of_input as u32));
+    g_mem_stack = Some(SinglePageStack::new_from_encoded(encoded_allocation_of_input));
   }
     hdk::debug(&hdk::APP_NAME);
     hdk::debug(&hdk::APP_DNA_HASH);

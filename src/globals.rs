@@ -16,20 +16,20 @@ lazy_static! {
 // Invokable functions in the ribosome
 // WARNING Names must be in sync with ZomeAPIFunction in holochain-rust
 extern {
-  pub(crate) fn hc_property(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_make_hash(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_debug(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_call(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_sign(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_verify_signature(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_commit_entry(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_update_entry(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_remove_entry(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_get_entry(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_link_entries(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_get_links(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_query(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_send(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_start_bundle(encoded_allocation_of_input: i32) -> i32;
-  pub(crate) fn hc_close_bundle(encoded_allocation_of_input: i32) -> i32;
+  pub(crate) fn hc_property(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_make_hash(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_debug(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_call(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_sign(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_verify_signature(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_commit_entry(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_update_entry(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_remove_entry(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_get_entry(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_link_entries(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_get_links(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_query(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_send(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_start_bundle(encoded_allocation_of_input: u32) -> u32;
+  pub(crate) fn hc_close_bundle(encoded_allocation_of_input: u32) -> u32;
 }
