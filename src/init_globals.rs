@@ -3,7 +3,7 @@
 use holochain_wasm_utils::try_deserialize_allocation;
 
 extern {
-  fn hc_init_globals(encoded_allocation_of_input: i32) -> i32;
+  fn hc_init_globals(encoded_allocation_of_input: u32) -> u32;
 }
 
 // WARNING must be in sync with InitGlobalsOutput in core
@@ -21,7 +21,7 @@ pub(crate) struct AppGlobals {
 // Retrieve all the public global values from the ribosome
 pub(crate) fn init_globals() -> AppGlobals {
   // Call WASMI-able init_globals
-  let encoded_allocation_of_result : i32;
+  let encoded_allocation_of_result : u32;
   unsafe {
     encoded_allocation_of_result = hc_init_globals(0);
   }
