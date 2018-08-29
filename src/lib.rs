@@ -1,6 +1,7 @@
 //! File holding the public Zome API
 //! All API Reference documentation should be done here.
 
+#[macro_use]
 extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
@@ -65,6 +66,16 @@ const VERSION_STR : &'static str = "1";
 pub enum ErrorCode {
   FunctionNotImplemented,
   HashNotFound,
+}
+
+impl ErrorCode {
+    pub fn to_json(&self) -> serde_json::Value {
+        let error_string = match self {
+            FunctionNotImplemented => "Function not implemented",
+            HashNotFound => "Hash not found"
+        };
+        json!({"error": error_string})
+    }
 }
 
 
