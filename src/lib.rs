@@ -209,11 +209,50 @@ pub fn verify_signature<S: Into<String>>(_signature: S, _data: S, _pub_key: S) -
     Err(ErrorCode::FunctionNotImplemented)
 }
 
+#[derive(Serialize, Default)]
+struct CommitInputStruct {
+  entry_type_name: String,
+  entry_content: String,
+}
+
+#[derive(Deserialize, Serialize, Default)]
+struct CommitOutputStruct {
+  hash: String,
+}
 
 /// FIXME DOC
-pub fn commit_entry<S: Into<String>>(_entry_type: S, _entry: serde_json::Value) -> Result<HashString, ErrorCode> {
-    // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+pub fn commit_entry(_entry_type_name: &str, _entry_content: &str) -> Result<HashString, ErrorCode> {
+    let mut mem_stack: SinglePageStack;
+    unsafe { mem_stack = g_mem_stack.unwrap(); }
+
+    // Put args in struct and serialize into memory
+    let input = CommitInputStruct {
+        entry_type_name: _entry_type_name.to_string(),
+        entry_content: _entry_content.to_string(),
+    };
+    let allocation_of_input =  serialize(&mut mem_stack, input);
+
+    // Call WASMI-able commit
+    let encoded_allocation_of_result: u32;
+    unsafe {
+        encoded_allocation_of_result = hc_commit_entry(allocation_of_input.encode() as u32);
+    }
+    // Check for ERROR in encoding
+    let result = try_deserialize_allocation(encoded_allocation_of_result as u32);
+
+    // what kind of error should we return?
+    // if let Err(e) = result {
+    //    return Err(e)
+    // }
+
+    // Deserialize complex result stored in memory
+    let output: CommitOutputStruct = result.unwrap();
+
+    // Free result & input allocations and all allocations made inside commit()
+    mem_stack.deallocate(allocation_of_input).expect("deallocate failed");
+
+    // Return hash
+    Ok(output.hash.to_string())
 }
 
 
