@@ -1,15 +1,15 @@
 //! File holding the public Zome API
 //! All API Reference documentation should be done here.
 
-extern crate serde;
-extern crate serde_json;
+pub extern crate serde;
+pub extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
 #[macro_use]
 extern crate bitflags;
 #[macro_use]
 extern crate lazy_static;
-extern crate holochain_wasm_utils;
+pub extern crate holochain_wasm_utils;
 
 pub mod globals;
 pub mod init_globals;
