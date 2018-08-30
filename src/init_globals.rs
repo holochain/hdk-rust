@@ -21,10 +21,7 @@ pub(crate) struct AppGlobals {
 // Retrieve all the public global values from the ribosome
 pub(crate) fn init_globals() -> AppGlobals {
     // Call WASMI-able init_globals
-    let encoded_allocation_of_result: u32;
-    unsafe {
-        encoded_allocation_of_result = hc_init_globals(0);
-    }
+    let encoded_allocation_of_result = unsafe { hc_init_globals(0) };
     // Deserialize complex result stored in memory
     let result = try_deserialize_allocation(encoded_allocation_of_result as u32);
     if result.is_err() {

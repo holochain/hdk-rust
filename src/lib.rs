@@ -173,7 +173,7 @@ pub fn make_hash<S: Into<String>>(
 
 /// FIXME DOC
 pub fn debug(msg: &str) {
-    let mut mem_stack: SinglePageStack = unsafe { g_mem_stack.unwrap() };
+    let mut mem_stack = unsafe { g_mem_stack.unwrap() };
     let allocation_of_input = serialize(&mut mem_stack, msg);
     unsafe {
         hc_debug(allocation_of_input.encode());
