@@ -2,13 +2,8 @@
 
 use holochain_wasm_utils::try_deserialize_allocation;
 
-<<<<<<< HEAD
-extern {
-  fn hc_init_globals(encoded_allocation_of_input: u32) -> u32;
-=======
 extern "C" {
-    fn hc_init_globals(encoded_allocation_of_input: i32) -> i32;
->>>>>>> zome macro; fmt
+    fn hc_init_globals(encoded_allocation_of_input: u32) -> u32;
 }
 
 // WARNING must be in sync with InitGlobalsOutput in core
@@ -25,21 +20,8 @@ pub(crate) struct AppGlobals {
 // HC INIT GLOBALS - Secret Api Function
 // Retrieve all the public global values from the ribosome
 pub(crate) fn init_globals() -> AppGlobals {
-<<<<<<< HEAD
-  // Call WASMI-able init_globals
-  let encoded_allocation_of_result : u32;
-  unsafe {
-    encoded_allocation_of_result = hc_init_globals(0);
-  }
-  // Deserialize complex result stored in memory
-  let result = try_deserialize_allocation(encoded_allocation_of_result as u32);
-  if result.is_err() {
-    panic!("AppGlobals should deserialize properly");
-  }
-  result.unwrap()
-=======
     // Call WASMI-able init_globals
-    let encoded_allocation_of_result: i32;
+    let encoded_allocation_of_result: u32;
     unsafe {
         encoded_allocation_of_result = hc_init_globals(0);
     }
@@ -49,5 +31,4 @@ pub(crate) fn init_globals() -> AppGlobals {
         panic!("AppGlobals should deserialize properly");
     }
     result.unwrap()
->>>>>>> zome macro; fmt
 }

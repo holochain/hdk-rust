@@ -10,19 +10,12 @@ use hdk::globals::g_mem_stack;
 use holochain_wasm_utils::*;
 
 #[no_mangle]
-<<<<<<< HEAD
-pub extern "C" fn check_global_dispatch(encoded_allocation_of_input : u32) -> u32 {
-  unsafe {
-    g_mem_stack = Some(SinglePageStack::new_from_encoded(encoded_allocation_of_input));
-  }
-=======
-pub extern "C" fn check_global_dispatch(encoded_allocation_of_input: i32) -> i32 {
+pub extern "C" fn check_global_dispatch(encoded_allocation_of_input: u32) -> u32 {
     unsafe {
         g_mem_stack = Some(SinglePageStack::new_from_encoded(
-            encoded_allocation_of_input as u32,
+            encoded_allocation_of_input,
         ));
     }
->>>>>>> zome macro; fmt
     hdk::debug(&hdk::APP_NAME);
     hdk::debug(&hdk::APP_DNA_HASH);
     hdk::debug(&hdk::APP_AGENT_ID_STR);

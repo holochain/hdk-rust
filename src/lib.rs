@@ -173,12 +173,14 @@ pub fn make_hash<S: Into<String>>(
 
 /// FIXME DOC
 pub fn debug(msg: &str) {
-  let mut mem_stack: SinglePageStack =
-  unsafe {  g_mem_stack.unwrap(); }
-  let allocation_of_input =  serialize(&mut mem_stack, msg);
-  unsafe { hc_debug(allocation_of_input.encode()); }
-  mem_stack.deallocate(allocation_of_input)
-    .expect("should be able to deallocate input that has been allocated on memory stack");
+    let mut mem_stack: SinglePageStack = unsafe { g_mem_stack.unwrap() };
+    let allocation_of_input = serialize(&mut mem_stack, msg);
+    unsafe {
+        hc_debug(allocation_of_input.encode());
+    }
+    mem_stack
+        .deallocate(allocation_of_input)
+        .expect("should be able to deallocate input that has been allocated on memory stack");
 }
 
 /// FIXME DOC
