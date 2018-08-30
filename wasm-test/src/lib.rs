@@ -6,16 +6,16 @@ extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
 
-use hdk::globals::g_mem_stack;
+use hdk::globals::G_MEM_STACK;
 use holochain_wasm_utils::*;
 
 #[no_mangle]
 pub extern "C" fn check_global_dispatch(encoded_allocation_of_input: u32) -> u32 {
-    g_mem_stack = unsafe {
-        Some(SinglePageStack::new_from_encoded(
+    unsafe {
+        G_MEM_STACK = Some(SinglePageStack::new_from_encoded(
             encoded_allocation_of_input,
-        ))
-    };
+        ));
+    }
 
     hdk::debug(&hdk::APP_NAME);
     hdk::debug(&hdk::APP_DNA_HASH);

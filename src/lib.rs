@@ -95,51 +95,51 @@ impl Default for GetEntryMask {
 
 // HC.LinkAction
 pub enum LinkAction {
-    ADD,
-    DELETE,
+    Add,
+    Delete,
 }
 
 // HC.PkgReq
 pub enum PkgRequest {
-    CHAIN,
-    CHAIN_OPTION,
-    ENTRY_TYPES,
+    Chain,
+    ChainOption,
+    EntryTypes,
 }
 
 // HC.PkgReq.ChainOpt
 pub enum ChainOption {
-    NONE,
-    HEADERS,
-    ENTRIES,
-    FULL,
+    None,
+    Headers,
+    Entries,
+    Full,
 }
 
 // HC.Bridge
 pub enum BridgeSide {
-    FROM,
-    TO,
+    From,
+    To,
 }
 
 // HC.SysEntryType
 // WARNING Keep in sync with SystemEntryType in holochain-rust
 enum SystemEntryType {
-    DNA,
-    AGENT,
-    KEY,
-    HEADERS,
-    DELETION,
+    Dna,
+    Agent,
+    Key,
+    Headers,
+    Deletion,
 }
 
 mod bundle_cancel {
     // HC.BundleCancel.Reason
     pub enum Reason {
-        USER_CANCEL,
-        TIMEOUT,
+        UserCancel,
+        Timeout,
     }
     // HC.BundleCancel.Response
     pub enum Response {
-        OK,
-        COMMIT,
+        Ok,
+        Commit,
     }
 }
 
@@ -173,7 +173,7 @@ pub fn make_hash<S: Into<String>>(
 
 /// FIXME DOC
 pub fn debug(msg: &str) {
-    let mut mem_stack = unsafe { g_mem_stack.unwrap() };
+    let mut mem_stack = unsafe { G_MEM_STACK.unwrap() };
     let allocation_of_input = serialize(&mut mem_stack, msg);
     unsafe {
         hc_debug(allocation_of_input.encode());
