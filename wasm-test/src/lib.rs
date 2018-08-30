@@ -34,7 +34,6 @@ struct TweetResponse {
 
 zome_functions! {
     send_tweet: |author: String, content: String| {
-        println!("Author: {}, content: {}", author, content);
 
         TweetResponse { ok: true }
     }

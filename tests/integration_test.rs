@@ -10,7 +10,7 @@ use test_utils::*;
 fn can_use_globals() {
     // Setup the holochain instance
     let wasm =
-        create_wasm_from_file("wasm-test/target/wasm32-unknown-unknown/debug/test_globals.wasm");
+        create_wasm_from_file("wasm-test/target/wasm32-unknown-unknown/release/test_globals.wasm");
     let dna = create_test_dna_with_wasm("test_zome", "test_cap", wasm);
 
     let (context, test_logger) = test_context_and_logger("alex");
@@ -22,6 +22,14 @@ fn can_use_globals() {
     // Call the exposed wasm function that calls the Commit API function
     let result = hc.call("test_zome", "test_cap", "check_global", r#"{}"#);
     assert!(result.unwrap().is_empty());
+
+    let result = hc.call(
+        "test_zome",
+        "test_cap",
+        "send_tweet",
+        r#"{ "author": "bob", "content": "had a boring day" }"#,
+    );
+    assert_eq!(result.unwrap(), r#"{"ok": true }"#);
 
     let test_logger = test_logger.lock().unwrap();
 
