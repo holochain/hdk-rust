@@ -10,7 +10,7 @@ use hdk::globals::G_MEM_STACK;
 use holochain_wasm_utils::*;
 
 #[no_mangle]
-pub extern "C" fn check_global_dispatch(encoded_allocation_of_input: u32) -> u32 {
+pub extern "C" fn check_global(encoded_allocation_of_input: u32) -> u32 {
     unsafe {
         G_MEM_STACK = Some(SinglePageStack::new_from_encoded(
             encoded_allocation_of_input,

@@ -26,4 +26,13 @@ fn can_use_globals() {
     let test_logger = test_logger.lock().unwrap();
 
     println!("{:?}", *test_logger);
+
+    let tweet_result = hc.call("test_zome", "test_cap", "send_tweet", r#"
+        {
+            "author": "Terence",
+            "content": "Take it easy dude, but take it!"
+        }"#).unwrap();
+
+    println!("Tweet result: {:?}", tweet_result);
+    assert_eq!(tweet_result, "\"{\\\"ok\\\":true}\"");
 }
