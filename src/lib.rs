@@ -2,7 +2,8 @@
 //! All API Reference documentation should be done here.
 
 pub extern crate serde;
-pub extern crate serde_json;
+#[macro_use]
+extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
 #[macro_use]
@@ -66,6 +67,17 @@ pub enum ErrorCode {
     FunctionNotImplemented,
     HashNotFound,
 }
+
+impl ErrorCode {
+    pub fn to_json(&self) -> serde_json::Value {
+        let error_string = match self {
+            FunctionNotImplemented => "Function not implemented",
+            HashNotFound => "Hash not found"
+        };
+        json!({"error": error_string})
+    }
+}
+
 
 // HC.Status
 // WARNING keep in sync with CRUDStatus
