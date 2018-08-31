@@ -56,9 +56,9 @@ macro_rules! zome_functions {
 
                 let raw_obj = execute(input);
 
-                let output_data = ::serde_json::to_string(&raw_obj).unwrap();
+                let mut stack = ::holochain_wasm_utils::SinglePageStack::new_from_encoded(encoded_allocation_of_input);
 
-                ::holochain_wasm_utils::serialize_into_encoded_allocation(&mut stack, output_data) as u32
+                ::holochain_wasm_utils::serialize_into_encoded_allocation(&mut stack, raw_obj) as u32
             }
         )+
     );

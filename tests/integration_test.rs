@@ -29,7 +29,7 @@ fn can_use_globals() {
         "send_tweet",
         r#"{ "author": "bob", "content": "had a boring day" }"#,
     );
-    assert_eq!(result.unwrap(), r#"{"ok": true }"#);
+    assert_eq!(result.unwrap(), r#"{"ok":true}"#);
 
     let test_logger = test_logger.lock().unwrap();
 
@@ -42,5 +42,5 @@ fn can_use_globals() {
         }"#).unwrap();
 
     println!("Tweet result: {:?}", tweet_result);
-    assert_eq!(tweet_result, "\"{\\\"ok\\\":true}\"");
+    assert_eq!(tweet_result, "{\"ok\":true}");
 }
