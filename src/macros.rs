@@ -1,16 +1,14 @@
 /// A macro for easily writing zome functions
 ///
 /// # Examples
-///
 /// ```
-/// #[macro_use]
-/// extern crate hdk;
-/// extern crate holochain_wasm_utils;
-/// extern crate serde;
-/// extern crate serde_json;
-/// #[macro_use]
-/// extern crate serde_derive;
+/// # #[macro_use] extern crate hdk;
+/// # extern crate holochain_wasm_utils;
+/// # extern crate serde;
+/// # extern crate serde_json;
+/// # #[macro_use] extern crate serde_derive;
 ///
+/// # fn main() {
 /// #[derive(Serialize)]
 /// struct CreatePostResponse {
 ///     author: String,
@@ -24,6 +22,7 @@
 ///         CreatePostResponse { author: author }
 ///     }
 /// }
+/// # }
 /// ```
 ///
 #[macro_export]
