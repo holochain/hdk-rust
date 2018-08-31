@@ -1,4 +1,4 @@
-/// A macro for easily wirting zome functions
+/// A macro for easily writing zome functions
 ///
 /// # Examples
 ///
