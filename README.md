@@ -50,15 +50,15 @@ The following functions are **incomplete**:
 - close_bundle
 
 ## Organization of Code
-global.rs holds all internal or private globals used by the zome API library, and contains internal global for memory usage, internal global for retrieving all app globals, and invokable functions in the ribosome 
+`global.rs` holds all internal or private globals used by the zome API library, and contains internal global for memory usage, internal global for retrieving all app globals, and invokable functions in the ribosome 
 
-lib.rs holds the public zome API where all API reference documentation is (app global variables, system consts, and API functions)
+`lib.rs` holds the public zome API where all API reference documentation is (app global variables, system consts, and API functions)
 
-macro.rs is a macro for easily writing zome functions
+`macro.rs` is a macro for easily writing zome functions
 
-init_globals.rs holds the internal/private zome API function that retrieves all the public global values from the ribosome 
+`init_globals.rs` holds the internal/private zome API function that retrieves all the public global values from the ribosome 
 
-cargo.toml manifest files describe dependencies. They introduce two metadata files with bits of projection information, fetch and build dependencies, and invokes holochain Rust with the correct parameters. 
+`Cargo.toml` manifest files describe dependencies. They introduce two metadata files with bits of projection information, fetch and build dependencies, and invokes Holochain Rust with the correct parameters. 
 
 ## Tests
 
