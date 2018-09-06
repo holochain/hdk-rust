@@ -1,12 +1,12 @@
 # Holochain Development Kit for Rust-based Apps
 
 ## Overview
-`holochain-hdk-rust` is a library for Rust-based holochain dApps that makes it easier to develop holochain zomes. With holochain, zome functions and validation code are represented as WASM binaries. This library provides bindings for Rust. 
+`hdk-rust` is a library for Rust-based holochain dApps that makes it easier to develop Holochain zomes. With Holochain, zome functions and validation code are represented as WASM binaries. This library provides bindings for Rust.
 
 ## Use
-First, [Rust](https://www.rust-lang.org/en-US/install.html) must be installed on your computer. 
+First, [Rust](https://www.rust-lang.org/en-US/install.html) must be installed on your computer.
 
-The development kit functions like a Rust packet manager, a crate. `holochain-hdk-rust` can be added as a dependency for any new dApp project. 
+Being a Rust library, `hdk-rust` can be added as a dependency to any Rust crate. When you generate Rust based Zomes with [holochain-cmd](https://github.com/holochain/holochain-cmd) it will automatically be added as a dependency, and imported into your code.
 
 ```rust
 [package]
@@ -22,49 +22,32 @@ For example, macro.rs provides a boilerplate for writing zome functions.
 
 TODO pending zome functions example doc
 
-### App spec 
-As new features, or changes to the HDK (and the API) are being designed, they add use cases to an example app and puts those changes as a pull request to its [repository](https://github.com/holochain/app-spec-rust). The repository also integrates the feature set available in Holochain's master branch.
+### Specification for App Development
+As new features, or changes to the HDK (and the API) are being designed, use cases will be added to an example app and put as changes to a pull request to its [repository](https://github.com/holochain/app-spec-rust). The repository also integrates the feature set available in Holochain's main branch.
 
 ### Availability of API Functions
 Functions will continue to move from incomplete to complete as this library matures.
 
-The following functions are <b>complete</b>:
+The following functions are **complete**:
+- debug
 
-debug
-
-The following functions are <b>incomplete</b>:
-
-property
-
-make_hash
-
-call
-
-sign
-
-verify_signature
-
-commit_entry
-
-update_entry
-
-update_agent
-
-remove_entry
-
-get_entry
-
-link_entries
-
-get_links
-
-query
-
-send
-
-start_bundle
-
-close_bundle
+The following functions are **incomplete**:
+- property
+- make_hash
+- call
+- sign
+- verify_signature
+- commit_entry
+- update_entry
+- update_agent
+- remove_entry
+- get_entry
+- link_entries
+- get_links
+- query
+- send
+- start_bundle
+- close_bundle
 
 ## Organization of Code
 global.rs holds all internal or private globals used by the zome API library, and contains internal global for memory usage, internal global for retrieving all app globals, and invokable functions in the ribosome 
