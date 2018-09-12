@@ -18,9 +18,28 @@ authors = ["Your Name Here"]
 hdk = { git = "https://github.com/holochain/hdk-rust"}
 ```
 
-For example, macro.rs provides a boilerplate for writing zome functions.
+`hdk-rust` includes a macro which should be used for writing your application logic into Zome functions. To use it looks something like this:
+```
+#[macro_use] extern crate hdk;
+extern crate holochain_wasm_utils;
+extern crate serde;
+extern crate serde_json;
+#[macro_use] extern crate serde_derive;
 
-TODO pending zome functions example doc
+#[derive(Serialize)]
+struct CreatePostResponse {
+    author: String,
+}
+
+zome_functions! {
+    create_post: |author: String, content: String| {
+
+        // ..snip..
+
+        CreatePostResponse { author: author }
+    }
+}
+```
 
 ### Specification for App Development
 As new features, or changes to the HDK (and the API) are being designed, use cases will be added to an example app and put as changes to a pull request to its [repository](https://github.com/holochain/app-spec-rust). The repository also integrates the feature set available in Holochain's main branch.
