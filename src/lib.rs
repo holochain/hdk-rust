@@ -1,6 +1,8 @@
 //! File holding the public Zome API
 //! All API Reference documentation should be done here.
 
+pub extern crate serde;
+#[macro_use]
 extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
@@ -8,13 +10,14 @@ extern crate serde_derive;
 extern crate bitflags;
 #[macro_use]
 extern crate lazy_static;
-extern crate holochain_wasm_utils;
+pub extern crate holochain_wasm_utils;
 
 pub mod globals;
 pub mod init_globals;
+pub mod macros;
 
-use holochain_wasm_utils::*;
 use globals::*;
+use holochain_wasm_utils::*;
 
 pub type HashString = String;
 
@@ -50,21 +53,31 @@ lazy_static! {
   pub static ref APP_AGENT_LATEST_HASH: &'static HashString = &APP_GLOBALS.app_agent_latest_hash;
 }
 
-
 //--------------------------------------------------------------------------------------------------
 // SYSTEM CONSTS
 //--------------------------------------------------------------------------------------------------
 
 // HC.Version
-const VERSION : u16 = 1;
-const VERSION_STR : &'static str = "1";
-
+const VERSION: u16 = 1;
+const VERSION_STR: &'static str = "1";
 
 // HC.HashNotFound
 // FIXME keep in sync with HcApiReturnCode?
 pub enum ErrorCode {
-  FunctionNotImplemented,
-  HashNotFound,
+    Error,
+    FunctionNotImplemented,
+    HashNotFound,
+}
+
+impl ErrorCode {
+    pub fn to_json(&self) -> serde_json::Value {
+        let error_string = match self {
+            Error => "Error",
+            FunctionNotImplemented => "Function not implemented",
+            HashNotFound => "Hash not found"
+        };
+        json!({"error": error_string})
+    }
 }
 
 
@@ -78,7 +91,6 @@ bitflags! {
     const MODIFIED = 1 << 3;
   }
 }
-
 
 // HC.GetMask
 bitflags! {
@@ -95,69 +107,61 @@ impl Default for GetEntryMask {
     }
 }
 
-
 // HC.LinkAction
 pub enum LinkAction {
-    ADD,
-    DELETE,
+    Add,
+    Delete,
 }
-
 
 // HC.PkgReq
 pub enum PkgRequest {
-    CHAIN,
-    CHAIN_OPTION,
-    ENTRY_TYPES,
+    Chain,
+    ChainOption,
+    EntryTypes,
 }
-
 
 // HC.PkgReq.ChainOpt
 pub enum ChainOption {
-    NONE,
-    HEADERS,
-    ENTRIES,
-    FULL,
+    None,
+    Headers,
+    Entries,
+    Full,
 }
-
 
 // HC.Bridge
 pub enum BridgeSide {
-    FROM,
-    TO,
+    From,
+    To,
 }
-
 
 // HC.SysEntryType
 // WARNING Keep in sync with SystemEntryType in holochain-rust
 enum SystemEntryType {
-    DNA,
-    AGENT,
-    KEY,
-    HEADERS,
-    DELETION,
+    Dna,
+    Agent,
+    Key,
+    Headers,
+    Deletion,
 }
-
 
 mod bundle_cancel {
     // HC.BundleCancel.Reason
     pub enum Reason {
-        USER_CANCEL,
-        TIMEOUT,
+        UserCancel,
+        Timeout,
     }
     // HC.BundleCancel.Response
     pub enum Response {
-        OK,
-        COMMIT,
+        Ok,
+        Commit,
     }
 }
-
 
 /// Allowed input for close_bundle()
 pub enum BundleOnClose {
     Commit,
     Discard,
 }
-
 
 //--------------------------------------------------------------------------------------------------
 // API FUNCTIONS
@@ -173,25 +177,32 @@ pub fn property<S: Into<String>>(_name: S) -> Result<String, ErrorCode> {
 }
 
 /// FIXME DOC
-pub fn make_hash<S: Into<String>>(_entry_type : S, _entry_data: serde_json::Value) -> Result<HashString, ErrorCode> {
+pub fn make_hash<S: Into<String>>(
+    _entry_type: S,
+    _entry_data: serde_json::Value,
+) -> Result<HashString, ErrorCode> {
     // FIXME
     Err(ErrorCode::FunctionNotImplemented)
 }
 
-
 /// FIXME DOC
 pub fn debug(msg: &str) {
-  let mut mem_stack: SinglePageStack;
-  unsafe { mem_stack = g_mem_stack.unwrap(); }
-  let allocation_of_input =  serialize(&mut mem_stack, msg);
-  unsafe { hc_debug(allocation_of_input.encode()); }
-  mem_stack.deallocate(allocation_of_input)
-    .expect("should be able to deallocate input that has been allocated on memory stack");
+    let mut mem_stack = unsafe { G_MEM_STACK.unwrap() };
+    let allocation_of_input = serialize(&mut mem_stack, msg);
+    unsafe {
+        hc_debug(allocation_of_input.encode());
+    }
+    mem_stack
+        .deallocate(allocation_of_input)
+        .expect("should be able to deallocate input that has been allocated on memory stack");
 }
 
-
 /// FIXME DOC
-pub fn call<S: Into<String>>(_zome_name: S, _function_name: S, _arguments: serde_json::Value) -> Result<serde_json::Value, ErrorCode> {
+pub fn call<S: Into<String>>(
+    _zome_name: S,
+    _function_name: S,
+    _arguments: serde_json::Value,
+) -> Result<serde_json::Value, ErrorCode> {
     // FIXME
     Err(ErrorCode::FunctionNotImplemented)
 }
@@ -202,28 +213,35 @@ pub fn sign<S: Into<String>>(_doc: S) -> Result<String, ErrorCode> {
     Err(ErrorCode::FunctionNotImplemented)
 }
 
-
 /// FIXME DOC
-pub fn verify_signature<S: Into<String>>(_signature: S, _data: S, _pub_key: S) -> Result<bool, ErrorCode> {
+pub fn verify_signature<S: Into<String>>(
+    _signature: S,
+    _data: S,
+    _pub_key: S,
+) -> Result<bool, ErrorCode> {
     // FIXME
     Err(ErrorCode::FunctionNotImplemented)
 }
-
-#[derive(Serialize, Default)]
-struct CommitInputStruct {
-  entry_type_name: String,
-  entry_content: String,
-}
-
-#[derive(Deserialize, Serialize, Default)]
-struct CommitOutputStruct {
-  hash: String,
-}
-
+   
 /// FIXME DOC
-pub fn commit_entry(_entry_type_name: &str, _entry_content: &str) -> Result<HashString, ErrorCode> {
+pub fn commit_entry(
+    _entry_type_name: &str,
+    _entry_content: &str,
+) -> Result<HashString, ErrorCode> {
+
+    #[derive(Serialize, Default)]
+    struct CommitInputStruct {
+        entry_type_name: String,
+        entry_content: String,
+    }
+
+    #[derive(Deserialize, Serialize, Default)]
+    struct CommitOutputStruct {
+        hash: String,
+    }
+
     let mut mem_stack: SinglePageStack;
-    unsafe { mem_stack = g_mem_stack.unwrap(); }
+    unsafe { mem_stack = G_MEM_STACK.unwrap(); }
 
     // Put args in struct and serialize into memory
     let input = CommitInputStruct {
@@ -240,10 +258,11 @@ pub fn commit_entry(_entry_type_name: &str, _entry_content: &str) -> Result<Hash
     // Check for ERROR in encoding
     let result = try_deserialize_allocation(encoded_allocation_of_result as u32);
 
-    // what kind of error should we return?
-    // if let Err(e) = result {
-    //    return Err(e)
-    // }
+    // TODO Get ErrorCode in line with HcApiReturnCode
+    // @see: https://github.com/holochain/hdk-rust/issues/8
+    if let Err(e) = result {
+        return Err(ErrorCode::Error);
+    }
 
     // Deserialize complex result stored in memory
     let output: CommitOutputStruct = result.unwrap();
@@ -255,9 +274,12 @@ pub fn commit_entry(_entry_type_name: &str, _entry_content: &str) -> Result<Hash
     Ok(output.hash.to_string())
 }
 
-
 /// FIXME DOC
-pub fn update_entry<S: Into<String>>(_entry_type: S, _entry: serde_json::Value, _replaces: HashString) -> Result<HashString, ErrorCode> {
+pub fn update_entry<S: Into<String>>(
+    _entry_type: S,
+    _entry: serde_json::Value,
+    _replaces: HashString,
+) -> Result<HashString, ErrorCode> {
     // FIXME
     Err(ErrorCode::FunctionNotImplemented)
 }
@@ -268,14 +290,15 @@ pub fn update_agent() -> Result<HashString, ErrorCode> {
     Err(ErrorCode::FunctionNotImplemented)
 }
 
-
 /// FIXME DOC
 /// Commit a Deletion System Entry
-pub fn remove_entry<S: Into<String>>(_entry: HashString, _message: S) -> Result<HashString, ErrorCode> {
+pub fn remove_entry<S: Into<String>>(
+    _entry: HashString,
+    _message: S,
+) -> Result<HashString, ErrorCode> {
     // FIXME
     Err(ErrorCode::FunctionNotImplemented)
 }
-
 
 /// FIXME DOC
 pub fn get_entry(_entry_hash: HashString) -> Result<serde_json::Value, ErrorCode> {
@@ -283,20 +306,20 @@ pub fn get_entry(_entry_hash: HashString) -> Result<serde_json::Value, ErrorCode
     Err(ErrorCode::FunctionNotImplemented)
 }
 
-
 /// FIXME DOC
 pub fn link_entries<S: Into<String>>(_base: HashString, _target: HashString, _tag: S) {
     // FIXME
     // Maybe return error if HashStrings are not valid
 }
 
-
 /// FIXME DOC
-pub fn get_links<S: Into<String>>(_base: HashString, _tag: S) -> Result<Vec<HashString>, ErrorCode> {
+pub fn get_links<S: Into<String>>(
+    _base: HashString,
+    _tag: S,
+) -> Result<Vec<HashString>, ErrorCode> {
     // FIXME
     Ok(vec![])
 }
-
 
 /// FIXME DOC
 pub fn query() -> Result<Vec<String>, ErrorCode> {
@@ -304,21 +327,18 @@ pub fn query() -> Result<Vec<String>, ErrorCode> {
     Err(ErrorCode::FunctionNotImplemented)
 }
 
-
 /// FIXME DOC
 pub fn send(_to: HashString, _message: serde_json::Value) -> Result<serde_json::Value, ErrorCode> {
     // FIXME
     Err(ErrorCode::FunctionNotImplemented)
 }
 
-
 /// FIXME DOC
-pub fn start_bundle(_timeout: usize, _user_param: serde_json::Value)  {
+pub fn start_bundle(_timeout: usize, _user_param: serde_json::Value) {
     // FIXME
 }
 
-
 /// FIXME DOC
-pub fn close_bundle(_action: BundleOnClose)  {
+pub fn close_bundle(_action: BundleOnClose) {
     // FIXME
 }
