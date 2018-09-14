@@ -20,11 +20,13 @@ hdk = { git = "https://github.com/holochain/hdk-rust"}
 
 `hdk-rust` includes a macro which should be used for writing your application logic into Zome functions. To use it looks something like this:
 ```
-#[macro_use] extern crate hdk;
+#[macro_use]
+extern crate hdk;
 extern crate holochain_wasm_utils;
 extern crate serde;
 extern crate serde_json;
-#[macro_use] extern crate serde_derive;
+#[macro_use]
+extern crate serde_derive;
 
 #[derive(Serialize)]
 struct CreatePostResponse {
