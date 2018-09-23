@@ -42,7 +42,10 @@ fn can_commit_entry() {
     );
     println!("\t result = {:?}", result);
     assert!(result.is_ok());
-    assert_eq!(result.unwrap(), "{\"hash\":\"QmR6vwie4jZiLeUiMZwJjTRMzS55ZMbMrXUCXcwRb3kTt9\"}");
+    assert_eq!(
+        result.unwrap(),
+        "{\"hash\":\"QmR6vwie4jZiLeUiMZwJjTRMzS55ZMbMrXUCXcwRb3kTt9\"}"
+    );
 }
 
 #[test]
@@ -57,7 +60,10 @@ fn can_commit_entry_macro() {
     );
     println!("\t result = {:?}", result);
     assert!(result.is_ok());
-    assert_eq!(result.unwrap(), "{\"hash\":\"QmR6vwie4jZiLeUiMZwJjTRMzS55ZMbMrXUCXcwRb3kTt9\"}");
+    assert_eq!(
+        result.unwrap(),
+        "{\"hash\":\"QmR6vwie4jZiLeUiMZwJjTRMzS55ZMbMrXUCXcwRb3kTt9\"}"
+    );
 }
 
 #[test]
@@ -69,7 +75,10 @@ fn can_round_trip() {
         "send_tweet",
         r#"{ "author": "bob", "content": "had a boring day" }"#,
     );
-    assert_eq!(result.unwrap(), "{\"first\":\"bob\",\"second\":\"had a boring day\"}");
+    assert_eq!(
+        result.unwrap(),
+        "{\"first\":\"bob\",\"second\":\"had a boring day\"}"
+    );
 
     let test_logger = test_logger.lock().unwrap();
 
