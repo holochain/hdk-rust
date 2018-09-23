@@ -84,7 +84,7 @@ impl ErrorCode {
 // WARNING Keep in sync with HcApiReturnCode
 fn return_code_to_error_string(return_code: &HcApiReturnCode) -> String {
     match return_code {
-        Success => panic!("return_code is not an error."),
+        Success => panic!("'Success' return code is not an error."),
         Failure => "Failure",
         ArgumentDeserializationFailed => "Argument deserialization failed",
         OutOfMemory => "Out of memory",
