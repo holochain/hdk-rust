@@ -6,12 +6,30 @@ extern crate test_utils;
 use holochain_core_api::*;
 use std::sync::{Arc, Mutex};
 use test_utils::*;
+use holochain_dna::zome::capabilities::{Capability, FnDeclaration};
+
+pub fn create_test_cap_with_fn_names(fn_names: Vec<&str>) -> Capability {
+    let mut capability = Capability::new();
+
+    for fn_name in fn_names {
+        let mut fn_decl = FnDeclaration::new();
+        fn_decl.name = String::from(fn_name);
+        capability.functions.push(fn_decl);
+    }
+    capability
+}
 
 fn start_holochain_instance() -> (Holochain, Arc<Mutex<TestLogger>>) {
     // Setup the holochain instance
     let wasm =
         create_wasm_from_file("wasm-test/target/wasm32-unknown-unknown/debug/test_globals.wasm");
-    let dna = create_test_dna_with_wasm("test_zome", "test_cap", wasm);
+    let capabability = create_test_cap_with_fn_names(vec![
+        "check_global",
+        "check_commit_entry",
+        "check_commit_entry_macro",
+        "send_tweet",
+    ]);
+    let dna = create_test_dna_with_cap("test_zome", "test_cap", &capabability, &wasm);
 
     let (context, test_logger) = test_context_and_logger("alex");
     let mut hc = Holochain::new(dna.clone(), context).unwrap();
@@ -44,7 +62,7 @@ fn can_commit_entry() {
     assert!(result.is_ok());
     assert_eq!(
         result.unwrap(),
-        "{\"hash\":\"QmR6vwie4jZiLeUiMZwJjTRMzS55ZMbMrXUCXcwRb3kTt9\"}"
+        "{\"hash\":\"fail\"}"
     );
 }
 
@@ -62,7 +80,7 @@ fn can_commit_entry_macro() {
     assert!(result.is_ok());
     assert_eq!(
         result.unwrap(),
-        "{\"hash\":\"QmR6vwie4jZiLeUiMZwJjTRMzS55ZMbMrXUCXcwRb3kTt9\"}"
+        "{\"hash\":\"fail\"}"
     );
 }
 
