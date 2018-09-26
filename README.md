@@ -85,7 +85,7 @@ To test...
 First, run the following code which builds a wasm file to test with:
 ```bash
 $ cd wasm-test
-$ cargo build --release --target wasm32-unknown-unknown
+$ cargo build --debug --target wasm32-unknown-unknown
 ```
 Then, run:
 ```bash

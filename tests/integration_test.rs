@@ -10,7 +10,7 @@ use test_utils::*;
 fn start_holochain_instance() -> (Holochain, Arc<Mutex<TestLogger>>) {
     // Setup the holochain instance
     let wasm =
-        create_wasm_from_file("wasm-test/target/wasm32-unknown-unknown/release/test_globals.wasm");
+        create_wasm_from_file("wasm-test/target/wasm32-unknown-unknown/debug/test_globals.wasm");
     let dna = create_test_dna_with_wasm("test_zome", "test_cap", wasm);
 
     let (context, test_logger) = test_context_and_logger("alex");
