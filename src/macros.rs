@@ -7,7 +7,7 @@
 /// # extern crate serde;
 /// # extern crate serde_json;
 /// # #[macro_use] extern crate serde_derive;
-///
+/// # use hdk::globals::G_MEM_STACK;
 /// # fn main() {
 /// #[derive(Serialize)]
 /// struct CreatePostResponse {
@@ -34,30 +34,39 @@ macro_rules! zome_functions {
         $(
             #[no_mangle]
             pub extern "C" fn $func_name(encoded_allocation_of_input: u32) -> u32 {
-                let mut stack = ::holochain_wasm_utils::SinglePageStack::new_from_encoded(encoded_allocation_of_input);
 
+                // Macro'd InputStruct
                 #[derive(Deserialize)]
-                struct ParamStruct {
+                struct InputStruct {
                     $($param : $param_type),*
                 }
 
-                fn execute(params: ParamStruct) -> impl ::serde::Serialize {
-                    let ParamStruct { $($param),* } = params;
-
+                // Macro'd function body
+                fn execute(params: InputStruct) -> impl ::serde::Serialize {
+                    let InputStruct { $($param),* } = params;
                     $main_block
                 }
 
-                let input: ParamStruct =  if let Ok(params) = ::holochain_wasm_utils::try_deserialize_allocation(encoded_allocation_of_input) {
-                    params
-                } else {
-                    return ::holochain_wasm_utils::serialize_into_encoded_allocation(&mut stack, r#"{"error": "invalid parameters"}"#) as u32;
-                };
+                // Actual program
+                // Init memory stack
+                unsafe {
+                    G_MEM_STACK = Some(::holochain_wasm_utils::SinglePageStack::from_encoded(encoded_allocation_of_input));
+                }
 
-                let raw_obj = execute(input);
+                // Deserialize input
+                let maybe_input = ::holochain_wasm_utils::try_deserialize_allocation(encoded_allocation_of_input);
+                if let Err(e) = maybe_input {
+                    return e as u32;
+                }
+                let input: InputStruct = maybe_input.unwrap();
 
-                let mut stack = ::holochain_wasm_utils::SinglePageStack::new_from_encoded(encoded_allocation_of_input);
+                // Execute inner function
+                let output_obj = execute(input);
 
-                ::holochain_wasm_utils::serialize_into_encoded_allocation(&mut stack, raw_obj) as u32
+                // Serialize output in WASM memory
+                unsafe {
+                    return ::holochain_wasm_utils::serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), output_obj) as u32;
+                }
             }
         )+
     );

@@ -83,8 +83,20 @@ The following functions are **incomplete**:
 
 ## Tests
 
+To test...
+First, run the following code which builds a wasm file to test with:
+```bash
+$ cd wasm-test
+$ cargo build --debug --target wasm32-unknown-unknown
+```
+Then, run:
+```bash
+$ cd ..
+$ cargo test
+```
+
 ### Integration test
 A test that sets up and runs a holochain instance, then calls the exposed WASM function that calls the Commit API function. 
 
 ### WASM test
-Tests WASM utilities. Contains cargo.toml dependencies file.
+Tests WASM utilities.

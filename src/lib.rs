@@ -16,7 +16,9 @@ pub mod globals;
 pub mod init_globals;
 pub mod macros;
 
+use self::ErrorCode::*;
 use globals::*;
+use holochain_wasm_utils::HcApiReturnCode::*;
 use holochain_wasm_utils::*;
 
 pub type HashString = String;
@@ -62,8 +64,8 @@ const VERSION: u16 = 1;
 const VERSION_STR: &'static str = "1";
 
 // HC.HashNotFound
-// FIXME keep in sync with HcApiReturnCode?
 pub enum ErrorCode {
+    ApiCallFailed(HcApiReturnCode),
     FunctionNotImplemented,
     HashNotFound,
 }
@@ -71,13 +73,27 @@ pub enum ErrorCode {
 impl ErrorCode {
     pub fn to_json(&self) -> serde_json::Value {
         let error_string = match self {
-            FunctionNotImplemented => "Function not implemented",
-            HashNotFound => "Hash not found"
+            ApiCallFailed(return_code) => return_code_to_error_string(return_code),
+            FunctionNotImplemented => "Function not implemented".to_string(),
+            HashNotFound => "Hash not found".to_string(),
         };
-        json!({"error": error_string})
+        json!({ "error": error_string })
     }
 }
 
+// WARNING Keep in sync with HcApiReturnCode
+fn return_code_to_error_string(return_code: &HcApiReturnCode) -> String {
+    match return_code {
+        Success => panic!("'Success' return code is not an error."),
+        Failure => "Failure",
+        ArgumentDeserializationFailed => "Argument deserialization failed",
+        OutOfMemory => "Out of memory",
+        ReceivedWrongActionResult => "Received wrong action result",
+        CallbackFailed => "Callback failed",
+        RecursiveCallForbidden => "Recursive call forbidden",
+        ResponseSerializationFailed => "Response serialization failed",
+    }.to_string()
+}
 
 // HC.Status
 // WARNING keep in sync with CRUDStatus
@@ -222,12 +238,50 @@ pub fn verify_signature<S: Into<String>>(
 }
 
 /// FIXME DOC
-pub fn commit_entry<S: Into<String>>(
-    _entry_type: S,
-    _entry: serde_json::Value,
-) -> Result<HashString, ErrorCode> {
-    // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+pub fn commit_entry(_entry_type_name: &str, _entry_content: &str) -> Result<HashString, ErrorCode> {
+    #[derive(Serialize, Default)]
+    struct CommitInputStruct {
+        entry_type_name: String,
+        entry_content: String,
+    }
+
+    #[derive(Deserialize, Serialize, Default)]
+    struct CommitOutputStruct {
+        hash: String,
+    }
+
+    let mut mem_stack: SinglePageStack;
+    unsafe {
+        mem_stack = G_MEM_STACK.unwrap();
+    }
+
+    // Put args in struct and serialize into memory
+    let input = CommitInputStruct {
+        entry_type_name: _entry_type_name.to_string(),
+        entry_content: _entry_content.to_string(),
+    };
+    let allocation_of_input = serialize(&mut mem_stack, input);
+
+    // Call WASMI-able commit
+    let encoded_allocation_of_result: u32;
+    unsafe {
+        encoded_allocation_of_result = hc_commit_entry(allocation_of_input.encode() as u32);
+    }
+    // Check for ERROR in encoding
+    let result = try_deserialize_allocation(encoded_allocation_of_result as u32);
+    if let Err(e) = result {
+        return Err(ErrorCode::ApiCallFailed(e));
+    }
+    // Deserialize complex result stored in memory
+    let output: CommitOutputStruct = result.unwrap();
+
+    // Free result & input allocations and all allocations made inside commit()
+    mem_stack
+        .deallocate(allocation_of_input)
+        .expect("deallocate failed");
+
+    // Return hash
+    Ok(output.hash.to_string())
 }
 
 /// FIXME DOC
