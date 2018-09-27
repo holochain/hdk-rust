@@ -59,11 +59,7 @@ fn can_commit_entry() {
         r#"{ "entry_type_name": "typename1", "entry_content": "some content" }"#,
     );
     println!("\t result = {:?}", result);
-    assert!(result.is_ok());
-    assert_eq!(
-        result.unwrap(),
-        "{\"hash\":\"fail\"}"
-    );
+    assert!(result.is_ok(), "result = {:?}", result);
 }
 
 #[test]
@@ -77,11 +73,7 @@ fn can_commit_entry_macro() {
         r#"{ "entry_type_name": "typename1", "entry_content": "some content" }"#,
     );
     println!("\t result = {:?}", result);
-    assert!(result.is_ok());
-    assert_eq!(
-        result.unwrap(),
-        "{\"hash\":\"fail\"}"
-    );
+    assert!(result.is_ok(), "\t result = {:?}", result);
 }
 
 #[test]

@@ -16,9 +16,8 @@ pub mod globals;
 pub mod init_globals;
 pub mod macros;
 
-use self::ErrorCode::*;
+use self::RibosomeError::*;
 use globals::*;
-use holochain_wasm_utils::HcApiReturnCode::*;
 use holochain_wasm_utils::*;
 
 pub type HashString = String;
@@ -64,35 +63,21 @@ const VERSION: u16 = 1;
 const VERSION_STR: &'static str = "1";
 
 // HC.HashNotFound
-pub enum ErrorCode {
-    ApiCallFailed(HcApiReturnCode),
+pub enum RibosomeError {
+    RibosomeFailed(String),
     FunctionNotImplemented,
     HashNotFound,
 }
 
-impl ErrorCode {
+impl RibosomeError {
     pub fn to_json(&self) -> serde_json::Value {
-        let error_string = match self {
-            ApiCallFailed(return_code) => return_code_to_error_string(return_code),
-            FunctionNotImplemented => "Function not implemented".to_string(),
-            HashNotFound => "Hash not found".to_string(),
-        };
-        json!({ "error": error_string })
+        let err_str = match self {
+            RibosomeFailed(error_desc) => error_desc,
+            FunctionNotImplemented => "Function not implemented",
+            HashNotFound => "Hash not found",
+        }.to_string();
+        json!({ "error": err_str })
     }
-}
-
-// WARNING Keep in sync with HcApiReturnCode
-fn return_code_to_error_string(return_code: &HcApiReturnCode) -> String {
-    match return_code {
-        Success => panic!("'Success' return code is not an error."),
-        Failure => "Failure",
-        ArgumentDeserializationFailed => "Argument deserialization failed",
-        OutOfMemory => "Out of memory",
-        ReceivedWrongActionResult => "Received wrong action result",
-        CallbackFailed => "Callback failed",
-        RecursiveCallForbidden => "Recursive call forbidden",
-        ResponseSerializationFailed => "Response serialization failed",
-    }.to_string()
 }
 
 // HC.Status
@@ -185,18 +170,18 @@ pub enum BundleOnClose {
 /// Returns an application property, which are defined by the app developer.
 /// It returns values from the DNA file that you set as properties of your application
 /// (e.g. Name, Language, Description, Author, etc.).
-pub fn property<S: Into<String>>(_name: S) -> Result<String, ErrorCode> {
+pub fn property<S: Into<String>>(_name: S) -> Result<String, RibosomeError> {
     // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
 pub fn make_hash<S: Into<String>>(
     _entry_type: S,
     _entry_data: serde_json::Value,
-) -> Result<HashString, ErrorCode> {
+) -> Result<HashString, RibosomeError> {
     // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
@@ -216,15 +201,15 @@ pub fn call<S: Into<String>>(
     _zome_name: S,
     _function_name: S,
     _arguments: serde_json::Value,
-) -> Result<serde_json::Value, ErrorCode> {
+) -> Result<serde_json::Value, RibosomeError> {
     // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
-pub fn sign<S: Into<String>>(_doc: S) -> Result<String, ErrorCode> {
+pub fn sign<S: Into<String>>(_doc: S) -> Result<String, RibosomeError> {
     // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
@@ -232,13 +217,13 @@ pub fn verify_signature<S: Into<String>>(
     _signature: S,
     _data: S,
     _pub_key: S,
-) -> Result<bool, ErrorCode> {
+) -> Result<bool, RibosomeError> {
     // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
-pub fn commit_entry(_entry_type_name: &str, _entry_content: &str) -> Result<HashString, ErrorCode> {
+pub fn commit_entry(_entry_type_name: &str, _entry_content: &str) -> Result<HashString, RibosomeError> {
     #[derive(Serialize, Default)]
     struct CommitInputStruct {
         entry_type_name: String,
@@ -267,12 +252,11 @@ pub fn commit_entry(_entry_type_name: &str, _entry_content: &str) -> Result<Hash
     unsafe {
         encoded_allocation_of_result = hc_commit_entry(allocation_of_input.encode() as u32);
     }
-    // Check for ERROR in encoding
+    // Deserialize complex result stored in memory and check for ERROR in encoding
     let result = try_deserialize_allocation(encoded_allocation_of_result as u32);
-    if let Err(e) = result {
-        return Err(ErrorCode::ApiCallFailed(e));
+    if let Err(err_str) = result {
+        return Err(RibosomeError::RibosomeFailed(err_str));
     }
-    // Deserialize complex result stored in memory
     let output: CommitOutputStruct = result.unwrap();
 
     // Free result & input allocations and all allocations made inside commit()
@@ -289,15 +273,15 @@ pub fn update_entry<S: Into<String>>(
     _entry_type: S,
     _entry: serde_json::Value,
     _replaces: HashString,
-) -> Result<HashString, ErrorCode> {
+) -> Result<HashString, RibosomeError> {
     // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
-pub fn update_agent() -> Result<HashString, ErrorCode> {
+pub fn update_agent() -> Result<HashString, RibosomeError> {
     // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
@@ -305,15 +289,15 @@ pub fn update_agent() -> Result<HashString, ErrorCode> {
 pub fn remove_entry<S: Into<String>>(
     _entry: HashString,
     _message: S,
-) -> Result<HashString, ErrorCode> {
+) -> Result<HashString, RibosomeError> {
     // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
-pub fn get_entry(_entry_hash: HashString) -> Result<serde_json::Value, ErrorCode> {
+pub fn get_entry(_entry_hash: HashString) -> Result<serde_json::Value, RibosomeError> {
     // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
@@ -326,21 +310,21 @@ pub fn link_entries<S: Into<String>>(_base: HashString, _target: HashString, _ta
 pub fn get_links<S: Into<String>>(
     _base: HashString,
     _tag: S,
-) -> Result<Vec<HashString>, ErrorCode> {
+) -> Result<Vec<HashString>, RibosomeError> {
     // FIXME
     Ok(vec![])
 }
 
 /// FIXME DOC
-pub fn query() -> Result<Vec<String>, ErrorCode> {
+pub fn query() -> Result<Vec<String>, RibosomeError> {
     // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
-pub fn send(_to: HashString, _message: serde_json::Value) -> Result<serde_json::Value, ErrorCode> {
+pub fn send(_to: HashString, _message: serde_json::Value) -> Result<serde_json::Value, RibosomeError> {
     // FIXME
-    Err(ErrorCode::FunctionNotImplemented)
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
