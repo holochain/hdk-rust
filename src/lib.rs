@@ -223,7 +223,10 @@ pub fn verify_signature<S: Into<String>>(
 }
 
 /// FIXME DOC
-pub fn commit_entry(_entry_type_name: &str, _entry_content: &str) -> Result<HashString, RibosomeError> {
+pub fn commit_entry(
+    _entry_type_name: &str,
+    _entry_content: &str,
+) -> Result<HashString, RibosomeError> {
     #[derive(Serialize, Default)]
     struct CommitInputStruct {
         entry_type_name: String,
@@ -322,7 +325,10 @@ pub fn query() -> Result<Vec<String>, RibosomeError> {
 }
 
 /// FIXME DOC
-pub fn send(_to: HashString, _message: serde_json::Value) -> Result<serde_json::Value, RibosomeError> {
+pub fn send(
+    _to: HashString,
+    _message: serde_json::Value,
+) -> Result<serde_json::Value, RibosomeError> {
     // FIXME
     Err(RibosomeError::FunctionNotImplemented)
 }

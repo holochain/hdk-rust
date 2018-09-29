@@ -8,7 +8,7 @@ extern crate serde_derive;
 
 use hdk::globals::G_MEM_STACK;
 use holochain_wasm_utils::*;
-use holochain_wasm_utils::HcApiReturnCode;
+use holochain_wasm_utils::error::HcApiReturnCode;
 use hdk::RibosomeError;
 
 #[no_mangle]

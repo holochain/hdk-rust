@@ -4,9 +4,9 @@ extern crate holochain_dna;
 extern crate test_utils;
 
 use holochain_core_api::*;
+use holochain_dna::zome::capabilities::{Capability, FnDeclaration};
 use std::sync::{Arc, Mutex};
 use test_utils::*;
-use holochain_dna::zome::capabilities::{Capability, FnDeclaration};
 
 pub fn create_test_cap_with_fn_names(fn_names: Vec<&str>) -> Capability {
     let mut capability = Capability::new();

@@ -8,6 +8,7 @@
 /// # extern crate serde_json;
 /// # #[macro_use] extern crate serde_derive;
 /// # use hdk::globals::G_MEM_STACK;
+/// # use holochain_wasm_utils::error::HcApiReturnCode;
 /// # fn main() {
 /// #[derive(Serialize)]
 /// struct CreatePostResponse {
