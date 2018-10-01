@@ -56,7 +56,7 @@ macro_rules! zome_functions {
 
                 // Deserialize input
                 let maybe_input = ::holochain_wasm_utils::try_deserialize_allocation(encoded_allocation_of_input);
-                if let Err(_e) = maybe_input {
+                if let Err(_) = maybe_input {
                     return HcApiReturnCode::ArgumentDeserializationFailed as u32;
                 }
                 let input: InputStruct = maybe_input.unwrap();
