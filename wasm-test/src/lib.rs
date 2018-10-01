@@ -8,6 +8,8 @@ extern crate serde_derive;
 
 use hdk::globals::G_MEM_STACK;
 use holochain_wasm_utils::*;
+use holochain_wasm_utils::error::HcApiReturnCode;
+use hdk::RibosomeError;
 
 #[no_mangle]
 pub extern "C" fn check_global(encoded_allocation_of_input: u32) -> u32 {
@@ -47,21 +49,24 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
 
     // Deserialize and check for an encoded error
     let result = try_deserialize_allocation(encoded_allocation_of_input as u32);
-    if let Err(e) = result {
-        return e as u32;
+    if let Err(_) = result {
+        return HcApiReturnCode::ArgumentDeserializationFailed as u32;
     }
     let input: CommitInputStruct = result.unwrap();
 
     let res = hdk::commit_entry(&input.entry_type_name, &input.entry_content);
 
-       let res_obj = match res {
-            Ok(hash_str) => CommitOutputStruct {
-                hash: hash_str
-            },
-            Err(_) => CommitOutputStruct {
-                hash: "fail".to_string()
-            },
-        };
+   let res_obj = match res {
+        Ok(hash_str) => CommitOutputStruct {
+            hash: hash_str
+        },
+        Err(RibosomeError::RibosomeFailed(err_str)) => {
+            unsafe {
+                return serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), err_str) as u32;
+            }
+        },
+       Err(_) => unreachable!(),
+    };
     unsafe {
         return serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), res_obj) as u32;
     }
@@ -73,12 +78,9 @@ zome_functions! {
     check_commit_entry_macro: |entry_type_name: String, entry_content: String| {
         let res = hdk::commit_entry(&entry_type_name, &entry_content);
         match res {
-            Ok(hash_str) => CommitOutputStruct {
-                hash: hash_str
-            },
-            Err(_) => CommitOutputStruct {
-                hash: "fail".to_string()
-            },
+            Ok(hash_str) => Ok(CommitOutputStruct { hash: hash_str }),
+            Err(RibosomeError::RibosomeFailed(err_str)) => Err(err_str),
+            Err(_) => unreachable!(),
         }
     }
 }
