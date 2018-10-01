@@ -49,7 +49,7 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
 
     // Deserialize and check for an encoded error
     let result = try_deserialize_allocation(encoded_allocation_of_input as u32);
-    if let Err(_err_str) = result {
+    if let Err(_) = result {
         return HcApiReturnCode::ArgumentDeserializationFailed as u32;
     }
     let input: CommitInputStruct = result.unwrap();
