@@ -72,7 +72,7 @@ pub enum RibosomeError {
 impl RibosomeError {
     pub fn to_json(&self) -> serde_json::Value {
         let err_str = match self {
-            RibosomeFailed(error_str) => error_str,
+            RibosomeFailed(error_desc) => error_desc,
             FunctionNotImplemented => "Function not implemented",
             HashNotFound => "Hash not found",
         }.to_string();
