@@ -224,8 +224,8 @@ pub fn verify_signature<S: Into<String>>(
 
 /// FIXME DOC
 pub fn commit_entry(
-    _entry_type_name: &str,
-    _entry_content: &str,
+    entry_type_name: &str,
+    entry_content: serde_json::Value,
 ) -> Result<HashString, RibosomeError> {
     #[derive(Serialize, Default)]
     struct CommitInputStruct {
@@ -245,8 +245,8 @@ pub fn commit_entry(
 
     // Put args in struct and serialize into memory
     let input = CommitInputStruct {
-        entry_type_name: _entry_type_name.to_string(),
-        entry_content: _entry_content.to_string(),
+        entry_type_name: entry_type_name.to_string(),
+        entry_content: entry_content.to_string(),
     };
     let allocation_of_input = serialize(&mut mem_stack, input);
 

@@ -2,6 +2,7 @@
 extern crate hdk;
 extern crate holochain_wasm_utils;
 extern crate serde;
+#[macro_use]
 extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
@@ -53,7 +54,9 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
     }
     let input: CommitInputStruct = result.unwrap();
 
-    let res = hdk::commit_entry(&input.entry_type_name, &input.entry_content);
+    let res = hdk::commit_entry(&input.entry_type_name, json!({
+        "entry_content": &input.entry_content
+    }));
 
    let res_obj = match res {
         Ok(hash_str) => CommitOutputStruct {
@@ -75,7 +78,9 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
 //
 zome_functions! {
     check_commit_entry_macro: |entry_type_name: String, entry_content: String| {
-        let res = hdk::commit_entry(&entry_type_name, &entry_content);
+        let res = hdk::commit_entry(&entry_type_name, json!({
+            "entry_content": entry_content
+        }));
         match res {
             Ok(hash_str) => Ok(CommitOutputStruct { hash: hash_str }),
             Err(RibosomeError::RibosomeFailed(err_str)) => Err(err_str),
