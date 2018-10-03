@@ -51,6 +51,7 @@ Functions will continue to move from incomplete to complete as this library matu
 
 The following functions are **complete**:
 - debug
+- commit_entry
 
 The following functions are **incomplete**:
 - property
@@ -58,7 +59,6 @@ The following functions are **incomplete**:
 - call
 - sign
 - verify_signature
-- commit_entry
 - update_entry
 - update_agent
 - remove_entry
