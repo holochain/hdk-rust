@@ -18,7 +18,7 @@ pub mod macros;
 
 use self::RibosomeError::*;
 use globals::*;
-use holochain_wasm_utils::*;
+use holochain_wasm_utils::{memory_serialization::*, memory_allocation::*};
 
 pub type HashString = String;
 
@@ -72,7 +72,7 @@ pub enum RibosomeError {
 impl RibosomeError {
     pub fn to_json(&self) -> serde_json::Value {
         let err_str = match self {
-            RibosomeFailed(error_desc) => error_desc,
+            RibosomeFailed(error_str) => error_str,
             FunctionNotImplemented => "Function not implemented",
             HashNotFound => "Hash not found",
         }.to_string();
