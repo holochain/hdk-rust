@@ -8,7 +8,7 @@
 /// # extern crate serde_json;
 /// # #[macro_use] extern crate serde_derive;
 /// # use hdk::globals::G_MEM_STACK;
-/// # use holochain_wasm_utils::error::HcApiReturnCode;
+/// # use holochain_wasm_utils::error::RibosomeReturnCode;
 /// # fn main() {
 /// #[derive(Serialize)]
 /// struct CreatePostResponse {
@@ -51,13 +51,14 @@ macro_rules! zome_functions {
                 // Actual program
                 // Init memory stack
                 unsafe {
-                    G_MEM_STACK = Some(::holochain_wasm_utils::SinglePageStack::from_encoded(encoded_allocation_of_input));
+                    ::hdk::globals::G_MEM_STACK =
+                        Some(::holochain_wasm_utils::memory_allocation::SinglePageStack::from_encoded(encoded_allocation_of_input));
                 }
 
                 // Deserialize input
-                let maybe_input = ::holochain_wasm_utils::try_deserialize_allocation(encoded_allocation_of_input);
+                let maybe_input = ::holochain_wasm_utils::memory_serialization::try_deserialize_allocation(encoded_allocation_of_input);
                 if let Err(_) = maybe_input {
-                    return HcApiReturnCode::ArgumentDeserializationFailed as u32;
+                    return ::holochain_wasm_utils::error::RibosomeReturnCode::ArgumentDeserializationFailed as u32;
                 }
                 let input: InputStruct = maybe_input.unwrap();
 
@@ -66,7 +67,7 @@ macro_rules! zome_functions {
 
                 // Serialize output in WASM memory
                 unsafe {
-                    return ::holochain_wasm_utils::serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), output_obj) as u32;
+                    return ::holochain_wasm_utils::memory_serialization::serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), output_obj) as u32;
                 }
             }
         )+

@@ -18,7 +18,7 @@ pub mod macros;
 
 use self::RibosomeError::*;
 use globals::*;
-use holochain_wasm_utils::*;
+use holochain_wasm_utils::{memory_serialization::*, memory_allocation::*};
 
 pub type HashString = String;
 

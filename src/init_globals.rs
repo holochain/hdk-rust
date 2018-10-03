@@ -1,6 +1,6 @@
 //! File for holding the internal/private zome api function `init_globals`
 
-use holochain_wasm_utils::try_deserialize_allocation;
+use holochain_wasm_utils::memory_serialization::try_deserialize_allocation;
 
 extern "C" {
     fn hc_init_globals(encoded_allocation_of_input: u32) -> u32;
