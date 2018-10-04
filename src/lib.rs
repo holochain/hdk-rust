@@ -18,7 +18,8 @@ pub mod macros;
 
 use self::RibosomeError::*;
 use globals::*;
-use holochain_wasm_utils::{memory_serialization::*, memory_allocation::*};
+use holochain_wasm_utils::{memory_allocation::*, memory_serialization::*};
+use std::{error::Error, fmt};
 
 pub type HashString = String;
 
@@ -63,6 +64,7 @@ const VERSION: u16 = 1;
 const VERSION_STR: &'static str = "1";
 
 // HC.HashNotFound
+#[derive(Clone, Debug, PartialEq)]
 pub enum RibosomeError {
     RibosomeFailed(String),
     FunctionNotImplemented,
@@ -70,6 +72,10 @@ pub enum RibosomeError {
 }
 
 impl RibosomeError {
+    pub fn new(msg: &str) -> RibosomeError {
+        RibosomeError::RibosomeFailed(msg.to_string())
+    }
+
     pub fn to_json(&self) -> serde_json::Value {
         let err_str = match self {
             RibosomeFailed(error_desc) => error_desc,
@@ -77,6 +83,26 @@ impl RibosomeError {
             HashNotFound => "Hash not found",
         }.to_string();
         json!({ "error": err_str })
+    }
+}
+
+impl fmt::Display for RibosomeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // @TODO seems weird to use debug for display
+        // replacing {:?} with {} gives a stack overflow on to_string() (there's a test for this)
+        // what is the right way to do this?
+        // @see https://github.com/holochain/holochain-rust/issues/223
+        write!(f, "{:?}", self)
+    }
+}
+
+impl Error for RibosomeError {
+    fn description(&self) -> &str {
+        match self {
+            FunctionNotImplemented => "Function not implemented",
+            HashNotFound => "Hash not found",
+            RibosomeFailed(error_desc) => error_desc,
+        }
     }
 }
 
@@ -341,4 +367,25 @@ pub fn start_bundle(_timeout: usize, _user_param: serde_json::Value) {
 /// FIXME DOC
 pub fn close_bundle(_action: BundleOnClose) {
     // FIXME
+}
+
+/// Unit tests
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    /// test that we can convert an error to a string
+    fn to_string() {
+        let err = RibosomeError::FunctionNotImplemented;
+        assert_eq!(r#"FunctionNotImplemented"#, err.to_string());
+    }
+
+    #[test]
+    /// test that we can get the description for an error
+    fn description() {
+        let err = RibosomeError::FunctionNotImplemented;
+        assert_eq!("Function not implemented", err.description());
+    }
+
 }
