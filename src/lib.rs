@@ -11,6 +11,7 @@ extern crate bitflags;
 #[macro_use]
 extern crate lazy_static;
 pub extern crate holochain_wasm_utils;
+extern crate either;
 
 pub mod globals;
 pub mod init_globals;
@@ -19,6 +20,7 @@ pub mod macros;
 use self::RibosomeError::*;
 use globals::*;
 use holochain_wasm_utils::{memory_serialization::*, memory_allocation::*};
+use either::Either;
 
 pub type HashString = String;
 
@@ -160,6 +162,50 @@ mod bundle_cancel {
 pub enum BundleOnClose {
     Commit,
     Discard,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ChainHeader {
+
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ValidationData {
+    chainHeader: ChainHeader,
+    sources : Vec<HashString>,
+    sourceChainEntries : Option<Vec<serde_json::Value>>,
+    sourceChainHeaders : Option<Vec<ChainHeader>>,
+    custom : Option<serde_json::Value>,
+    lifecycle : HcEntryLifecycle,
+    #[serde(with = "EitherDef")]
+    action : Either<HcEntryAction, HcLinkAction>,
+ }
+
+#[derive(Serialize, Deserialize)]
+pub enum HcEntryLifecycle {
+    Chain,
+    Dht,
+    Meta,
+ }
+
+#[derive(Serialize, Deserialize)]
+pub enum HcEntryAction {
+    Commit,
+    Modify,
+    Delete,
+ }
+
+#[derive(Serialize, Deserialize)]
+pub enum HcLinkAction {
+    Commit,
+    Delete,
+ }
+
+ #[derive(Serialize, Deserialize)]
+ #[serde(remote = "Either")]
+pub enum EitherDef<L, R> {
+    Left(L),
+    Right(R),
 }
 
 //--------------------------------------------------------------------------------------------------

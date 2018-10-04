@@ -73,3 +73,56 @@ macro_rules! zome_functions {
         )+
     );
 }
+
+
+#[macro_export]
+macro_rules! validations {
+    (
+        $([ENTRY] $func_name:ident {
+            [$package:path]
+            | $entry:ident : $entry_type:ty, $ctx:ident : hdk::ValidationData | $main_block:expr
+        })+
+    ) => (
+
+        $(
+            #[no_mangle]
+            pub extern "C" fn $func_name(encoded_allocation_of_input: u32) -> u32 {
+
+                // Macro'd InputStruct
+                #[derive(Deserialize)]
+                struct InputStruct {
+                    $entry : $entry_type,
+                    $ctx : ::hdk::ValidationData,
+                }
+
+                // Macro'd function body
+                fn execute(params: InputStruct) -> Result<(), String> {
+                    let InputStruct { $entry, $ctx } = params;
+                    $main_block
+                }
+
+                // Actual program
+                // Init memory stack
+                unsafe {
+                    ::hdk::globals::G_MEM_STACK =
+                        Some(::holochain_wasm_utils::memory_allocation::SinglePageStack::from_encoded(encoded_allocation_of_input));
+                }
+
+                // Deserialize input
+                let maybe_input = ::holochain_wasm_utils::memory_serialization::try_deserialize_allocation(encoded_allocation_of_input);
+                if let Err(_) = maybe_input {
+                    return ::holochain_wasm_utils::error::RibosomeReturnCode::ArgumentDeserializationFailed as u32;
+                }
+                let input: InputStruct = maybe_input.unwrap();
+
+                // Execute inner function
+                let output_result = execute(input);
+
+                // Serialize output in WASM memory
+                unsafe {
+                    return ::holochain_wasm_utils::memory_serialization::serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), output_result) as u32;
+                }
+            }
+        )+
+    );
+}
