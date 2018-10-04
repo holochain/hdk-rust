@@ -94,3 +94,18 @@ fn can_round_trip() {
 
     println!("{:?}", *test_logger);
 }
+
+#[test]
+fn can_invalidate_invalid_commit() {
+    let (mut hc, _) = start_holochain_instance();
+    // Call the exposed wasm function that calls the Commit API function
+    let result = hc.call(
+        "test_zome",
+        "test_cap",
+        "check_commit_entry_macro",
+        r#"{ "entry_type_name": "testEntryType", "entry_content": "FAIL" }"#,
+    );
+    println!("\t result = {:?}", result);
+    assert!(result.is_err(), "\t result = {:?}", result);
+    assert_eq!("FAIL content is not allowed", result.err().unwrap().to_string());
+}
