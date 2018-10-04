@@ -6,7 +6,9 @@ extern crate serde;
 extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
+extern crate boolinator;
 
+use boolinator::Boolinator;
 use hdk::globals::G_MEM_STACK;
 use holochain_wasm_utils::{error::RibosomeReturnCode, memory_serialization::*, memory_allocation::*};
 use hdk::RibosomeError;
@@ -90,7 +92,7 @@ zome_functions! {
 }
 
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 struct TweetResponse {
     first: String,
     second: String,
@@ -100,5 +102,20 @@ zome_functions! {
     send_tweet: |author: String, content: String| {
 
         TweetResponse { first: author,  second: content}
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+struct TestEntryType {
+    entry_content: String,
+}
+
+validations! {
+    [ENTRY] validate_tweet_response {
+        [hdk::ValidationPackage::Entry]
+        |entry: TestEntryType, _ctx: hdk::ValidationData| {
+            (entry.entry_content != "FAIL")
+                .ok_or_else(|| "FAIL content is not allowed".to_string())
+        }
     }
 }
