@@ -54,9 +54,11 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
     if let Err(_) = result {
         return RibosomeReturnCode::ArgumentDeserializationFailed as u32;
     }
+
     let input: CommitInputStruct = result.unwrap();
-    let entry_json: serde_json::Value = serde_json::from_str(&input.entry_content).unwrap();
-    let res = hdk::commit_entry(&input.entry_type_name, entry_json);
+    let res = hdk::commit_entry(&input.entry_type_name, json!({
+        "entry_content": &input.entry_content
+    }));
 
    let res_obj = match res {
         Ok(hash_str) => CommitOutputStruct {
