@@ -95,6 +95,12 @@ macro_rules! validations {
                     $ctx : ::hdk::ValidationData,
                 }
 
+                #[derive(Deserialize)]
+                struct InputStructGeneric {
+                    entry : $entry_type,
+                    ctx : ::hdk::ValidationData,
+                }
+
                 // Macro'd function body
                 fn execute(params: InputStruct) -> Result<(), String> {
                     let InputStruct { $entry, $ctx } = params;
@@ -110,10 +116,16 @@ macro_rules! validations {
 
                 // Deserialize input
                 let maybe_input = ::holochain_wasm_utils::memory_serialization::try_deserialize_allocation(encoded_allocation_of_input);
-                if let Err(_) = maybe_input {
+                if let Err(err) = maybe_input {
+                    hdk::debug(&format!("Error deserializing: {}", err));
                     return ::holochain_wasm_utils::error::RibosomeReturnCode::ArgumentDeserializationFailed as u32;
                 }
-                let input: InputStruct = maybe_input.unwrap();
+                let input_generic: InputStructGeneric = maybe_input.unwrap();
+                let input = InputStruct {
+                    $entry: input_generic.entry,
+                    $ctx: input_generic.ctx,
+                };
+
 
                 // Execute inner function
                 let output_result = execute(input);

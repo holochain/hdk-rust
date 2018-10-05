@@ -103,7 +103,7 @@ fn can_invalidate_invalid_commit() {
         "test_zome",
         "test_cap",
         "check_commit_entry_macro",
-        r#"{ "entry_type_name": "testEntryType", "entry_content": "FAIL" }"#,
+        r#"{ "entry_type_name": "testEntryType", "entry_content": "{\"stuff\": \"FAIL\"}" }"#,
     );
     println!("\t result = {:?}", result);
     assert!(result.is_err(), "\t result = {:?}", result);

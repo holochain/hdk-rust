@@ -55,10 +55,8 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
         return RibosomeReturnCode::ArgumentDeserializationFailed as u32;
     }
     let input: CommitInputStruct = result.unwrap();
-
-    let res = hdk::commit_entry(&input.entry_type_name, json!(
-        &input.entry_content
-    ));
+    let entry_json: serde_json::Value = serde_json::from_str(&input.entry_content).unwrap();
+    let res = hdk::commit_entry(&input.entry_type_name, entry_json);
 
    let res_obj = match res {
         Ok(hash_str) => CommitOutputStruct {
@@ -107,14 +105,14 @@ zome_functions! {
 
 #[derive(Serialize, Deserialize)]
 struct TestEntryType {
-    entry_content: String,
+    stuff: String,
 }
 
 validations! {
     [ENTRY] validate_testEntryType {
         [hdk::ValidationPackage::Entry]
         |entry: TestEntryType, _ctx: hdk::ValidationData| {
-            (entry.entry_content != "FAIL")
+            (entry.stuff != "FAIL")
                 .ok_or_else(|| "FAIL content is not allowed".to_string())
         }
     }

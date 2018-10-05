@@ -164,21 +164,35 @@ pub enum BundleOnClose {
     Discard,
 }
 
+pub type Address = String;
+pub type EntryType = String;
+
 #[derive(Serialize, Deserialize)]
 pub struct ChainHeader {
-
+    /// the type of this entry
+    /// system types may have associated "subconscious" behavior
+    entry_type: EntryType,
+    /// ISO8601 time stamp
+    timestamp: String,
+    /// Key to the immediately preceding header. Only the genesis Pair can have None as valid
+    link: Option<Address>,
+    /// Key to the entry of this header
+    entry_address: Address,
+    /// agent's cryptographic signature of the entry
+    entry_signature: String,
+    /// Key to the most recent header of the same type, None is valid only for the first of that type
+    link_same_type: Option<Address>,
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct ValidationData {
-    chainHeader: ChainHeader,
-    sources : Vec<HashString>,
-    sourceChainEntries : Option<Vec<serde_json::Value>>,
-    sourceChainHeaders : Option<Vec<ChainHeader>>,
-    custom : Option<serde_json::Value>,
-    lifecycle : HcEntryLifecycle,
-    #[serde(with = "EitherDef")]
-    action : Either<HcEntryAction, HcLinkAction>,
+    pub chain_header: Option<ChainHeader>,
+    pub sources : Vec<HashString>,
+    pub source_chain_entries : Option<Vec<serde_json::Value>>,
+    pub source_chain_headers : Option<Vec<ChainHeader>>,
+    pub custom : Option<serde_json::Value>,
+    pub lifecycle : HcEntryLifecycle,
+    pub action : HcEntryAction,
  }
 
 #[derive(Serialize, Deserialize)]
@@ -276,7 +290,7 @@ pub fn commit_entry(
     #[derive(Serialize, Default)]
     struct CommitInputStruct {
         entry_type_name: String,
-        entry_content: String,
+        entry_content: serde_json::Value,
     }
 
     #[derive(Deserialize, Serialize, Default)]
@@ -292,7 +306,7 @@ pub fn commit_entry(
     // Put args in struct and serialize into memory
     let input = CommitInputStruct {
         entry_type_name: entry_type_name.to_string(),
-        entry_content: entry_content.to_string(),
+        entry_content: entry_content,
     };
     let allocation_of_input = serialize(&mut mem_stack, input);
 
