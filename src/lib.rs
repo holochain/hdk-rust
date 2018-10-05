@@ -369,23 +369,135 @@ pub fn close_bundle(_action: BundleOnClose) {
     // FIXME
 }
 
+//--------------------------------------------------------------------------------------------------
+// UNIT TESTS
+//--------------------------------------------------------------------------------------------------
+
 /// Unit tests
 #[cfg(test)]
 mod test {
     use super::*;
 
+    // check whether error is FunctionNotImplemented
+    fn is_implemented(error: RibosomeError) -> bool {
+        match error {
+            RibosomeError::FunctionNotImplemented => false,
+            _ => true,
+        }
+    }
+
+    // check whether make_hash() function is implemented
+    fn is_implemented_make_hash() -> bool {
+        let result = make_hash("", json!(""));
+        match result {
+            Err(err) => is_implemented(err),
+            _ => true,
+        }
+    }
+
+    // check whether property() function is implemented
+    fn is_implemented_property() -> bool {
+        let result = property("");
+        match result {
+            Err(err) => is_implemented(err),
+            _ => false,
+        }
+    }
+
+    //
+    // Ribosome error handling unit tests
+    //
+
     #[test]
     /// test that we can convert an error to a string
     fn to_string() {
-        let err = RibosomeError::FunctionNotImplemented;
-        assert_eq!(r#"FunctionNotImplemented"#, err.to_string());
+        let err = RibosomeError::FunctionNotImplemented.to_string();
+        assert_eq!(r#"FunctionNotImplemented"#, err)
     }
 
     #[test]
     /// test that we can get the description for an error
     fn description() {
         let err = RibosomeError::FunctionNotImplemented;
-        assert_eq!("Function not implemented", err.description());
+        assert_eq!("Function not implemented", err.description())
     }
 
+    //
+    // property() unit tests
+    //
+
+    #[test]
+    /// test that property() returns HashNotFound error for null key
+    fn property_key_null() {
+        if !is_implemented_property() {
+            assert!(false);
+        }
+        assert_eq!(r#"HashNotFound"#, property("").err().unwrap().to_string())
+    }
+
+    #[test]
+    /// test that property() returns HashNotFound error for unknown key
+    fn property_key_unknown() {
+        if !is_implemented_property() {
+            assert!(false);
+        }
+        assert_eq!(
+            r#"HashNotFound"#,
+            property("unknown").err().unwrap().to_string()
+        )
+    }
+
+    #[test]
+    /// test that property() returns value for known key
+    fn property_key_known() {
+        if !is_implemented_property() {
+            assert!(false);
+        }
+        assert_eq!(true, property("Name").is_ok())
+    }
+
+    //
+    // make_hash() unit tests
+    //
+
+    #[test]
+    /// test that make_hash() returns value for array entry data
+    fn make_hash_data_invalid() {
+        if !is_implemented_make_hash() {
+            assert!(false);
+        }
+        assert_eq!(true, make_hash("test_entry", json!("")).is_ok())
+    }
+
+    #[test]
+    /// test that make_hash() returns value for valid entry data
+    fn make_hash_data_valid() {
+        if !is_implemented_make_hash() {
+            assert!(false);
+        }
+        assert_eq!(true, make_hash("test", json!("test")).is_ok());
+        assert_eq!(true, make_hash("test", json!(1)).is_ok());
+        assert_eq!(true, make_hash("test", json!([1, 2, 3])).is_ok());
+        assert_eq!(true, make_hash("test", serde_json::Value::Null).is_ok());
+        assert_eq!(
+            true,
+            make_hash("test", serde_json::Value::Bool(true)).is_ok()
+        );
+        assert_eq!(
+            true,
+            make_hash("test", json!({"a": [1, 2, 3], "b": true})).is_ok()
+        )
+    }
+
+    #[test]
+    /// test that make_hash() returns error for empty entry type
+    fn make_hash_type_empty() {
+        if !is_implemented_make_hash() {
+            assert!(false);
+        }
+        assert_eq!(
+            r#"HashNotFound"#, // TODO: is this the right error?
+            make_hash("", json!("test_data")).err().unwrap().to_string()
+        )
+    }
 }
