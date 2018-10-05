@@ -111,7 +111,7 @@ struct TestEntryType {
 }
 
 validations! {
-    [ENTRY] validate_tweet_response {
+    [ENTRY] validate_testEntryType {
         [hdk::ValidationPackage::Entry]
         |entry: TestEntryType, _ctx: hdk::ValidationData| {
             (entry.entry_content != "FAIL")
