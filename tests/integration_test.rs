@@ -106,6 +106,6 @@ fn can_invalidate_invalid_commit() {
         r#"{ "entry_type_name": "testEntryType", "entry_content": "{\"stuff\": \"FAIL\"}" }"#,
     );
     println!("\t result = {:?}", result);
-    assert!(result.is_err(), "\t result = {:?}", result);
-    assert_eq!("FAIL content is not allowed", result.err().unwrap().to_string());
+    assert!(result.is_ok(), "\t result = {:?}", result);
+    assert_eq!("{\"Err\":\"Call to `hc_commit_entry()` failed: \\\"FAIL content is not allowed\\\"\"}", result.unwrap());
 }
