@@ -19,9 +19,14 @@ pub mod macros;
 
 use self::RibosomeError::*;
 use globals::*;
-use holochain_wasm_utils::{memory_serialization::*, memory_allocation::*};
+use holochain_wasm_utils::{
+    memory_serialization::*, memory_allocation::*,
+    validation::*
+};
 use either::Either;
 
+#[derive(Clone, Serialize, Deserialize)]
+pub struct ValidationData;
 pub type HashString = String;
 
 //--------------------------------------------------------------------------------------------------
@@ -162,64 +167,6 @@ mod bundle_cancel {
 pub enum BundleOnClose {
     Commit,
     Discard,
-}
-
-pub type Address = String;
-pub type EntryType = String;
-
-#[derive(Serialize, Deserialize)]
-pub struct ChainHeader {
-    /// the type of this entry
-    /// system types may have associated "subconscious" behavior
-    entry_type: EntryType,
-    /// ISO8601 time stamp
-    timestamp: String,
-    /// Key to the immediately preceding header. Only the genesis Pair can have None as valid
-    link: Option<Address>,
-    /// Key to the entry of this header
-    entry_address: Address,
-    /// agent's cryptographic signature of the entry
-    entry_signature: String,
-    /// Key to the most recent header of the same type, None is valid only for the first of that type
-    link_same_type: Option<Address>,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct ValidationData {
-    pub chain_header: Option<ChainHeader>,
-    pub sources : Vec<HashString>,
-    pub source_chain_entries : Option<Vec<serde_json::Value>>,
-    pub source_chain_headers : Option<Vec<ChainHeader>>,
-    pub custom : Option<serde_json::Value>,
-    pub lifecycle : HcEntryLifecycle,
-    pub action : HcEntryAction,
- }
-
-#[derive(Serialize, Deserialize)]
-pub enum HcEntryLifecycle {
-    Chain,
-    Dht,
-    Meta,
- }
-
-#[derive(Serialize, Deserialize)]
-pub enum HcEntryAction {
-    Commit,
-    Modify,
-    Delete,
- }
-
-#[derive(Serialize, Deserialize)]
-pub enum HcLinkAction {
-    Commit,
-    Delete,
- }
-
- #[derive(Serialize, Deserialize)]
- #[serde(remote = "Either")]
-pub enum EitherDef<L, R> {
-    Left(L),
-    Right(R),
 }
 
 //--------------------------------------------------------------------------------------------------
