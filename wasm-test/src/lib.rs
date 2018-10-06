@@ -33,6 +33,10 @@ struct CommitOutputStruct {
     hash: String,
 }
 
+#[no_mangle]
+pub extern "C" fn validate_commit(_encoded_allocation_of_input: u32) -> u32 {
+    0
+}
 
 #[no_mangle]
 pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
@@ -75,6 +79,11 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
 }
 
 
+#[derive(Deserialize, Serialize, Default)]
+struct GetOutputStruct {
+    entry: String,
+}
+
 //
 zome_functions! {
     check_commit_entry_macro: |entry_type_name: String, entry_content: String| {
@@ -83,6 +92,16 @@ zome_functions! {
         ));
         match res {
             Ok(hash_str) => Ok(CommitOutputStruct { hash: hash_str }),
+            Err(RibosomeError::RibosomeFailed(err_str)) => Err(err_str),
+            Err(_) => unreachable!(),
+        }
+    }
+
+    check_get_entry: |entry_hash: String| {
+panic!("fish");
+        let res = hdk::get_entry(entry_hash);
+        match res {
+            Ok(entry_str) => Ok(GetOutputStruct { entry: entry_str.to_string() }),
             Err(RibosomeError::RibosomeFailed(err_str)) => Err(err_str),
             Err(_) => unreachable!(),
         }

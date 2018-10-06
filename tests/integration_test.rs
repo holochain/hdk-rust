@@ -27,6 +27,7 @@ fn start_holochain_instance() -> (Holochain, Arc<Mutex<TestLogger>>) {
         "check_global",
         "check_commit_entry",
         "check_commit_entry_macro",
+        "check_get_entry",
         "send_tweet",
     ]);
     let dna = create_test_dna_with_cap("test_zome", "test_cap", &capabability, &wasm);
@@ -92,4 +93,29 @@ fn can_round_trip() {
     let test_logger = test_logger.lock().unwrap();
 
     println!("{:?}", *test_logger);
+}
+
+#[test]
+fn can_get_entry() {
+    let (mut hc, _) = start_holochain_instance();
+    // Call the exposed wasm function that calls the Commit API function
+    let result = hc.call(
+        "test_zome",
+        "test_cap",
+        "check_commit_entry_macro",
+        r#"{ "entry_type_name": "testEntryType", "entry_content": "some content" }"#,
+    );
+    assert!(result.is_ok(), "\t result = {:?}", result);
+    println!("COMMITRESULT: {:?}", result.unwrap());
+
+    let result = hc.call(
+        "test_zome",
+        "test_cap",
+        "check_get_entry",
+        r#"QmbC71ggSaEa1oVPTeNN7ZoB93DYhxowhKSF6Yia2VjMy5"#,
+    );
+    println!("THEHAHSH: {:?}", result);
+    assert!(result.is_ok(), "\t result = {:?}", result);
+    assert_eq!(false,true);
+
 }

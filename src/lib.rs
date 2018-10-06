@@ -306,10 +306,48 @@ pub fn remove_entry<S: Into<String>>(
     Err(RibosomeError::FunctionNotImplemented)
 }
 
-/// FIXME DOC
-pub fn get_entry(_entry_hash: HashString) -> Result<serde_json::Value, RibosomeError> {
-    // FIXME
-    Err(RibosomeError::FunctionNotImplemented)
+/// implements access to low-level WASM hc_get_entry
+pub fn get_entry(entry_hash: HashString) -> Result<serde_json::Value, RibosomeError> {
+    #[derive(Serialize, Default)]
+    struct GetInputStruct {
+        address: String,
+    }
+
+    #[derive(Deserialize, Serialize, Default)]
+    struct GetOutputStruct {
+        entry: String,
+    }
+
+    let mut mem_stack: SinglePageStack;
+    unsafe {
+        mem_stack = G_MEM_STACK.unwrap();
+    }
+
+    // Put args in struct and serialize into memory
+    let input = GetInputStruct {
+        address: entry_hash.to_string(),
+    };
+    let allocation_of_input = serialize(&mut mem_stack, input);
+
+    // Call WASMI-able commit
+    let encoded_allocation_of_result: u32;
+    unsafe {
+        encoded_allocation_of_result = hc_get_entry(allocation_of_input.encode() as u32);
+    }
+    // Deserialize complex result stored in memory and check for ERROR in encoding
+    let result = try_deserialize_allocation(encoded_allocation_of_result as u32);
+    if let Err(err_str) = result {
+        return Err(RibosomeError::RibosomeFailed(err_str));
+    }
+    let output: GetOutputStruct = result.unwrap();
+
+    // Free result & input allocations and all allocations made inside commit()
+    mem_stack
+        .deallocate(allocation_of_input)
+        .expect("deallocate failed");
+
+    // Return entry
+    Ok(json!(output))
 }
 
 /// FIXME DOC
