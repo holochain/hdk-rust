@@ -118,7 +118,7 @@ macro_rules! validations {
                 let maybe_input = ::holochain_wasm_utils::memory_serialization::try_deserialize_allocation(encoded_allocation_of_input);
                 if let Err(err) = maybe_input {
                     hdk::debug(&format!("Error deserializing: {}", err));
-                    return ::holochain_wasm_utils::error::RibosomeReturnCode::ArgumentDeserializationFailed as u32;
+                    return ::holochain_wasm_utils::error::RibosomeErrorCode::ArgumentDeserializationFailed as u32;
                 }
                 let input_generic: InputStructGeneric = maybe_input.unwrap();
                 let input = InputStruct {
