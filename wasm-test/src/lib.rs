@@ -10,7 +10,7 @@ extern crate boolinator;
 
 use boolinator::Boolinator;
 use hdk::globals::G_MEM_STACK;
-use holochain_wasm_utils::{error::RibosomeReturnCode, memory_serialization::*, memory_allocation::*};
+use holochain_wasm_utils::{error::RibosomeErrorCode, memory_serialization::*, memory_allocation::*};
 use hdk::RibosomeError;
 
 #[no_mangle]
@@ -52,7 +52,7 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
     // Deserialize and check for an encoded error
     let result = try_deserialize_allocation(encoded_allocation_of_input as u32);
     if let Err(_) = result {
-        return RibosomeReturnCode::ArgumentDeserializationFailed as u32;
+        return RibosomeErrorCode::ArgumentDeserializationFailed as u32;
     }
 
     let input: CommitInputStruct = result.unwrap();
