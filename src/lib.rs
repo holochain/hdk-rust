@@ -106,6 +106,20 @@ impl Error for RibosomeError {
     }
 }
 
+impl PartialEq<String> for RibosomeError {
+    fn eq(&self, failure_msg: &String) -> bool {
+        match self {
+            RibosomeFailed(msg) => {
+                if msg == failure_msg {
+                    return true;
+                }
+                false
+            }
+            _ => false,
+        }
+    }
+}
+
 // HC.Status
 // WARNING keep in sync with CRUDStatus
 bitflags! {
