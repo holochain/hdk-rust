@@ -392,6 +392,10 @@ pub fn close_bundle(_action: BundleOnClose) {
 mod test {
     use super::*;
 
+    //
+    // Utility functions to check whether API function implemented
+    //
+
     // check whether error is FunctionNotImplemented
     fn is_implemented(error: RibosomeError) -> bool {
         match error {
@@ -418,20 +422,73 @@ mod test {
         }
     }
 
+    // check whether call() function is implemented
+    fn is_implemented_call() -> bool {
+        let result = call("", "", json!(""));
+        match result {
+            Err(err) => is_implemented(err),
+            _ => false,
+        }
+    }
+
+    // check whether sign() function is implemented
+    fn is_implemented_sign() -> bool {
+        let result = sign("");
+        match result {
+            Err(err) => is_implemented(err),
+            _ => false,
+        }
+    }
+
+    // check whether verify_signature() function is implemented
+    fn is_implemented_verify_signature() -> bool {
+        let result = verify_signature("", "", "");
+        match result {
+            Err(err) => is_implemented(err),
+            _ => false,
+        }
+    }
+
+    // check whether commit_entry() function is implemented
+    fn is_implemented_commit_entry() -> bool {
+        let result = commit_entry("", "");
+        match result {
+            Err(err) => is_implemented(err),
+            _ => false,
+        }
+    }
+
+    // check whether update_entry() function is implemented
+    fn is_implemented_update_entry() -> bool {
+        let result = update_entry("", json!(""), "".to_string());
+        match result {
+            Err(err) => is_implemented(err),
+            _ => false,
+        }
+    }
+    // check whether remove_entry() function is implemented
+    fn is_implemented_remove_entry() -> bool {
+        let result = remove_entry("".to_string(), "");
+        match result {
+            Err(err) => is_implemented(err),
+            _ => false,
+        }
+    }
+
     //
     // Ribosome error handling unit tests
     //
 
     #[test]
     /// test that we can convert an error to a string
-    fn to_string() {
+    fn test_to_string() {
         let err = RibosomeError::FunctionNotImplemented.to_string();
         assert_eq!(r#"FunctionNotImplemented"#, err)
     }
 
     #[test]
     /// test that we can get the description for an error
-    fn description() {
+    fn test_description() {
         let err = RibosomeError::FunctionNotImplemented;
         assert_eq!("Function not implemented", err.description())
     }
@@ -442,31 +499,29 @@ mod test {
 
     #[test]
     /// test that property() returns HashNotFound error for null key
-    fn property_key_null() {
+    fn test_property_invalid() {
         if !is_implemented_property() {
             assert!(false);
         }
-        assert_eq!(r#"HashNotFound"#, property("").err().unwrap().to_string())
-    }
 
-    #[test]
-    /// test that property() returns HashNotFound error for unknown key
-    fn property_key_unknown() {
-        if !is_implemented_property() {
-            assert!(false);
-        }
+        // empty property key
+        assert_eq!(r#"HashNotFound"#, property("").err().unwrap().to_string());
+
+        // unknown property key
         assert_eq!(
             r#"HashNotFound"#,
             property("unknown").err().unwrap().to_string()
-        )
+        );
     }
 
     #[test]
     /// test that property() returns value for known key
-    fn property_key_known() {
+    fn test_property_valid() {
         if !is_implemented_property() {
             assert!(false);
         }
+
+        // known property key
         assert_eq!(true, property("Name").is_ok())
     }
 
@@ -476,19 +531,27 @@ mod test {
 
     #[test]
     /// test that make_hash() returns value for array entry data
-    fn make_hash_data_invalid() {
+    fn test_make_hash_invalid() {
         if !is_implemented_make_hash() {
             assert!(false);
         }
-        assert_eq!(true, make_hash("test_entry", json!("")).is_ok())
+
+        // empty entry type
+        assert_eq!(
+            r#"HashNotFound"#, // TODO: is this the right error?
+            make_hash("", json!("test_data")).err().unwrap().to_string()
+        )
     }
 
     #[test]
     /// test that make_hash() returns value for valid entry data
-    fn make_hash_data_valid() {
+    fn test_make_hash_valid() {
         if !is_implemented_make_hash() {
             assert!(false);
         }
+
+        // non-empty entry type w/ various valid forms of entry data
+        assert_eq!(true, make_hash("test", json!("")).is_ok());
         assert_eq!(true, make_hash("test", json!("test")).is_ok());
         assert_eq!(true, make_hash("test", json!(1)).is_ok());
         assert_eq!(true, make_hash("test", json!([1, 2, 3])).is_ok());
@@ -503,15 +566,190 @@ mod test {
         )
     }
 
+    //
+    // call() unit tests
+    //
+
     #[test]
-    /// test that make_hash() returns error for empty entry type
-    fn make_hash_type_empty() {
-        if !is_implemented_make_hash() {
+    /// test that call() returns error for invalid arguments
+    fn test_call_invalid() {
+        if !is_implemented_call() {
             assert!(false);
         }
+
+        // empty zome name
+        assert_eq!(true, call("", "test", json!("test")).is_err());
+
+        // empty function name
+        assert_eq!(true, call("test", "", json!("test")).is_err());
+    }
+
+    #[test]
+    /// test that call() returns value for valid arguments
+    fn test_call_valid() {
+        if !is_implemented_call() {
+            assert!(false);
+        }
+
+        // valid zome, function, and argument(s)
+        assert_eq!(true, call("test", "test", json!("")).is_ok());
+    }
+
+    //
+    // sign() unit tests
+    //
+
+    #[test]
+    /// test that sign() returns value for valid arguments
+    fn test_sign() {
+        if !is_implemented_sign() {
+            assert!(false);
+        }
+        assert_eq!(true, sign("").is_ok());
+        assert_eq!(true, sign("test data").is_ok());
+    }
+
+    //
+    // verify_signature() unit tests
+    //
+
+    #[test]
+    /// test that verify_signature() returns error for invalid arguments
+    fn test_verify_signature_invalid() {
+        if !is_implemented_verify_signature() {
+            assert!(false);
+        }
+
+        // invalid (i.e., empty string) arguments
+        assert_eq!(true, verify_signature("", "", "").is_err());
+
+        // invalid public key used to verify signature on self-signed test data
+        // TODO: raise issue re move vs borrow ownership of data to be signed
+        let data = "test data".to_string();
+        let signed_data = sign(data.clone());
+        if let Ok(sig) = signed_data {
+            // test signature invalid per bad signing key
+            let bad_key = "".to_string();
+            assert_eq!(true, verify_signature(sig, data, bad_key).is_err());
+        }
+    }
+
+    #[test]
+    /// test that verify_signature() returns value for valid arguments
+    fn test_verify_signature_valid() {
+        if !is_implemented_verify_signature() {
+            assert!(false);
+        }
+
+        // get agent public key to verify self-signed data
+        let key_entry = get_entry(APP_AGENT_KEY_HASH.to_string());
+        if let Ok(entry_value) = key_entry {
+            let pub_key = entry_value["public_key"].to_string();
+            let data = "test data".to_string();
+            let signed_data = sign(data.clone());
+            if let Ok(sig) = signed_data {
+                assert_eq!(true, verify_signature(sig, data, pub_key).is_ok());
+            }
+        }
+    }
+
+    //
+    // commit_entry() unit tests
+    //
+
+    #[test]
+    /// test that commit_entry() returns error for invalid arguments
+    ///
+    fn test_commit_entry_invalid() {
+        if !is_implemented_commit_entry() {
+            assert!(false);
+        }
+
+        // invalid (i.e., empty string) arguments
+        assert_eq!(true, commit_entry("", "").is_err());
+    }
+
+    #[test]
+    /// test that commit_entry() returns ok for valid arguments
+    ///
+    fn test_commit_entry_valid() {
+        if !is_implemented_commit_entry() {
+            assert!(false);
+        }
+
+        // invalid (i.e., empty string) arguments
+        assert_eq!(true, commit_entry("test", "test data").is_ok());
+    }
+
+    //
+    // update_entry() unit tests
+    //
+
+    #[test]
+    /// test that update_entry() returns error for invalid arguments
+    ///
+    fn test_update_entry_invalid() {
+        if !is_implemented_update_entry() {
+            assert!(false);
+        }
+
+        // invalid entry
+        let bad_entry = "".to_string();
+        assert_eq!(true, update_entry("test", json!(""), bad_entry).is_err());
+
+        // invalid entry type
+        let test_entry = commit_entry("test", "test_data").unwrap();
+        assert_eq!(true, update_entry("", json!(""), test_entry).is_err());
+    }
+
+    #[test]
+    /// test that entry() returns ok for valid arguments
+    ///
+    fn test_update_entry_valid() {
+        if !is_implemented_commit_entry() {
+            assert!(false);
+        }
+
+        // invalid (i.e., empty string) arguments
+        let test_entry = commit_entry("test", "test data").unwrap();
         assert_eq!(
-            r#"HashNotFound"#, // TODO: is this the right error?
-            make_hash("", json!("test_data")).err().unwrap().to_string()
-        )
+            true,
+            update_entry("test", json!("test data"), test_entry).is_ok()
+        );
+    }
+
+    //
+    // commit_entry() unit tests
+    //
+
+    #[test]
+    /// test that remove_entry() returns error for invalid arguments
+    ///
+    fn test_remove_entry_invalid() {
+        if !is_implemented_remove_entry() {
+            assert!(false);
+        }
+
+        // invalid (i.e., empty string) arguments
+        assert_eq!(
+            true,
+            remove_entry("".to_string(), "remove_entry_invalid() test").is_err()
+        );
+    }
+
+    #[test]
+    /// test that remove_entry() returns ok for valid arguments
+    ///
+    fn test_remove_entry_valid() {
+        if !is_implemented_remove_entry() {
+            assert!(false);
+        }
+
+        // invalid (i.e., empty string) arguments
+        let test_entry = commit_entry("test", "test data").unwrap();
+        assert_eq!(
+            true,
+            remove_entry(test_entry, "remove_entry_valid() test").is_ok()
+        );
     }
 }
