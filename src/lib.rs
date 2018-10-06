@@ -11,7 +11,6 @@ extern crate bitflags;
 #[macro_use]
 extern crate lazy_static;
 pub extern crate holochain_wasm_utils;
-extern crate either;
 
 pub mod globals;
 pub mod init_globals;
@@ -23,8 +22,6 @@ use holochain_wasm_utils::{
     memory_serialization::*, memory_allocation::*,
     validation::*
 };
-use either::Either;
-
 pub use holochain_wasm_utils::validation::*;
 
 pub type HashString = String;
