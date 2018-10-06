@@ -25,8 +25,8 @@ use holochain_wasm_utils::{
 };
 use either::Either;
 
-#[derive(Clone, Serialize, Deserialize)]
-pub struct ValidationData;
+pub use holochain_wasm_utils::validation::*;
+
 pub type HashString = String;
 
 //--------------------------------------------------------------------------------------------------
