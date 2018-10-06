@@ -90,8 +90,11 @@ The following functions are **incomplete**:
 
 ## Tests
 
-To test...
-First, run the following code which builds a wasm file to test with:
+To test you can either use `make` with:
+
+`make test`
+
+or, if you want to do this manually remember that you will need to build the wasm file that the tests need to run.  Build it like this:
 ```bash
 $ cd wasm-test
 $ cargo build --target wasm32-unknown-unknown
