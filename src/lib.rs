@@ -185,15 +185,20 @@ pub fn make_hash<S: Into<String>>(
 }
 
 /// FIXME DOC
-pub fn debug(msg: &str) {
+pub fn debug(msg: &str) -> Result<(), RibosomeError> {
     let mut mem_stack = unsafe { G_MEM_STACK.unwrap() };
-    let allocation_of_input = serialize(&mut mem_stack, msg);
+    let maybe_allocation_of_input = serialize(&mut mem_stack, msg);
+    if let Err(err_code) = maybe_allocation_of_input {
+        return Err(RibosomeError::RibosomeFailed(err_code.to_string()));
+    }
+    let allocation_of_input = maybe_allocation_of_input.unwrap();
     unsafe {
         hc_debug(allocation_of_input.encode());
     }
     mem_stack
         .deallocate(allocation_of_input)
         .expect("should be able to deallocate input that has been allocated on memory stack");
+    Ok(())
 }
 
 /// FIXME DOC
@@ -248,7 +253,11 @@ pub fn commit_entry(
         entry_type_name: _entry_type_name.to_string(),
         entry_content: _entry_content.to_string(),
     };
-    let allocation_of_input = serialize(&mut mem_stack, input);
+    let maybe_allocation_of_input = serialize(&mut mem_stack, input);
+    if let Err(err_code) = maybe_allocation_of_input {
+        return Err(RibosomeError::RibosomeFailed(err_code.to_string()));
+    }
+    let allocation_of_input = maybe_allocation_of_input.unwrap();
 
     // Call WASMI-able commit
     let encoded_allocation_of_result: u32;
