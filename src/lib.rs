@@ -393,89 +393,6 @@ mod test {
     use super::*;
 
     //
-    // Utility functions to check whether API function implemented
-    //
-
-    // check whether error is FunctionNotImplemented
-    fn is_implemented(error: RibosomeError) -> bool {
-        match error {
-            RibosomeError::FunctionNotImplemented => false,
-            _ => true,
-        }
-    }
-
-    // check whether make_hash() function is implemented
-    fn is_implemented_make_hash() -> bool {
-        let result = make_hash("", json!(""));
-        match result {
-            Err(err) => is_implemented(err),
-            _ => true,
-        }
-    }
-
-    // check whether property() function is implemented
-    fn is_implemented_property() -> bool {
-        let result = property("");
-        match result {
-            Err(err) => is_implemented(err),
-            _ => false,
-        }
-    }
-
-    // check whether call() function is implemented
-    fn is_implemented_call() -> bool {
-        let result = call("", "", json!(""));
-        match result {
-            Err(err) => is_implemented(err),
-            _ => false,
-        }
-    }
-
-    // check whether sign() function is implemented
-    fn is_implemented_sign() -> bool {
-        let result = sign("");
-        match result {
-            Err(err) => is_implemented(err),
-            _ => false,
-        }
-    }
-
-    // check whether verify_signature() function is implemented
-    fn is_implemented_verify_signature() -> bool {
-        let result = verify_signature("", "", "");
-        match result {
-            Err(err) => is_implemented(err),
-            _ => false,
-        }
-    }
-
-    // check whether commit_entry() function is implemented
-    fn is_implemented_commit_entry() -> bool {
-        let result = commit_entry("", "");
-        match result {
-            Err(err) => is_implemented(err),
-            _ => false,
-        }
-    }
-
-    // check whether update_entry() function is implemented
-    fn is_implemented_update_entry() -> bool {
-        let result = update_entry("", json!(""), "".to_string());
-        match result {
-            Err(err) => is_implemented(err),
-            _ => false,
-        }
-    }
-    // check whether remove_entry() function is implemented
-    fn is_implemented_remove_entry() -> bool {
-        let result = remove_entry("".to_string(), "");
-        match result {
-            Err(err) => is_implemented(err),
-            _ => false,
-        }
-    }
-
-    //
     // Ribosome error handling unit tests
     //
 
@@ -500,7 +417,9 @@ mod test {
     #[test]
     /// test that property() returns HashNotFound error for null key
     fn test_property_invalid() {
-        if !is_implemented_property() {
+        // check whether function implemented
+        let result = property("");
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -517,7 +436,9 @@ mod test {
     #[test]
     /// test that property() returns value for known key
     fn test_property_valid() {
-        if !is_implemented_property() {
+        // check whether function implemented
+        let result = property("");
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -532,7 +453,9 @@ mod test {
     #[test]
     /// test that make_hash() returns value for array entry data
     fn test_make_hash_invalid() {
-        if !is_implemented_make_hash() {
+        // check whether function implemented
+        let result = make_hash("", json!(""));
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -546,7 +469,9 @@ mod test {
     #[test]
     /// test that make_hash() returns value for valid entry data
     fn test_make_hash_valid() {
-        if !is_implemented_make_hash() {
+        // check whether function implemented
+        let result = make_hash("", json!(""));
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -573,7 +498,9 @@ mod test {
     #[test]
     /// test that call() returns error for invalid arguments
     fn test_call_invalid() {
-        if !is_implemented_call() {
+        // check whether function implemented
+        let result = call("", "", json!(""));
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -587,7 +514,9 @@ mod test {
     #[test]
     /// test that call() returns value for valid arguments
     fn test_call_valid() {
-        if !is_implemented_call() {
+        // check whether function implemented
+        let result = call("", "", json!(""));
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -602,9 +531,12 @@ mod test {
     #[test]
     /// test that sign() returns value for valid arguments
     fn test_sign() {
-        if !is_implemented_sign() {
+        // check whether function implemented
+        let result = sign("");
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
+
         assert_eq!(true, sign("").is_ok());
         assert_eq!(true, sign("test data").is_ok());
     }
@@ -616,7 +548,9 @@ mod test {
     #[test]
     /// test that verify_signature() returns error for invalid arguments
     fn test_verify_signature_invalid() {
-        if !is_implemented_verify_signature() {
+        // check whether function implemented
+        let result = verify_signature("", "", "");
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -637,7 +571,9 @@ mod test {
     #[test]
     /// test that verify_signature() returns value for valid arguments
     fn test_verify_signature_valid() {
-        if !is_implemented_verify_signature() {
+        // check whether function implemented
+        let result = verify_signature("", "", "");
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -661,7 +597,9 @@ mod test {
     /// test that commit_entry() returns error for invalid arguments
     ///
     fn test_commit_entry_invalid() {
-        if !is_implemented_commit_entry() {
+        // check whether function implemented
+        let result = commit_entry("", "");
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -673,7 +611,9 @@ mod test {
     /// test that commit_entry() returns ok for valid arguments
     ///
     fn test_commit_entry_valid() {
-        if !is_implemented_commit_entry() {
+        // check whether function implemented
+        let result = commit_entry("", "");
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -689,7 +629,9 @@ mod test {
     /// test that update_entry() returns error for invalid arguments
     ///
     fn test_update_entry_invalid() {
-        if !is_implemented_update_entry() {
+        // check whether function implemented
+        let result = update_entry("", json!(""), "".to_string());
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -706,7 +648,9 @@ mod test {
     /// test that entry() returns ok for valid arguments
     ///
     fn test_update_entry_valid() {
-        if !is_implemented_commit_entry() {
+        // check whether function implemented
+        let result = update_entry("", json!(""), "".to_string());
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -726,7 +670,9 @@ mod test {
     /// test that remove_entry() returns error for invalid arguments
     ///
     fn test_remove_entry_invalid() {
-        if !is_implemented_remove_entry() {
+        // check whether function implemented
+        let result = remove_entry("".to_string(), "");
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
@@ -741,7 +687,9 @@ mod test {
     /// test that remove_entry() returns ok for valid arguments
     ///
     fn test_remove_entry_valid() {
-        if !is_implemented_remove_entry() {
+        // check whether function implemented
+        let result = remove_entry("".to_string(), "");
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
