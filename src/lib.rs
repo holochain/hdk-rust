@@ -663,12 +663,28 @@ mod test {
     }
 
     //
+    // update_agent() unit tests
+    //
+
+    #[test]
+    /// test that update_agent() returns ok
+    fn test_update_agent() {
+        // check whether function implemented
+        let result = update_agent();
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
+            assert!(false);
+        }
+
+        // valid invocation
+        assert_eq!(true, update_agent().is_ok());
+    }
+
+    //
     // commit_entry() unit tests
     //
 
     #[test]
     /// test that remove_entry() returns error for invalid arguments
-    ///
     fn test_remove_entry_invalid() {
         // check whether function implemented
         let result = remove_entry("".to_string(), "");
@@ -699,5 +715,100 @@ mod test {
             true,
             remove_entry(test_entry, "remove_entry_valid() test").is_ok()
         );
+    }
+
+    //
+    // get_entry() unit tests
+    //
+
+    #[test]
+    /// test that get_entry() returns ok for valid arguments
+    fn test_get_entry_valid() {
+        // check whether function implemented
+        let result = get_entry("".to_string());
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
+            assert!(false);
+        }
+
+        // get newly-committed test entry
+        let test_entry = commit_entry("test", "test data").unwrap();
+        let result = get_entry(test_entry);
+        assert_eq!(true, result.is_ok());
+        assert_eq!(Some(json!("test data")), result.ok());
+    }
+
+    #[test]
+    /// test that get_entry() returns error for valid arguments
+    fn test_get_entry_invalid() {
+        // check whether function implemented
+        let result = get_entry("".to_string());
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
+            assert!(false);
+        }
+
+        // null entry hash
+        assert_eq!(true, get_entry("".to_string()).is_err());
+
+        // get removed test entry
+        let test_entry = commit_entry("test", "test data").unwrap();
+        remove_entry(test_entry.clone(), "test data").unwrap();
+        let result = get_entry(test_entry);
+        assert_eq!(true, result.is_err());
+        if let Some(RibosomeError::HashNotFound) = result.err() {
+            assert!(true);
+        }
+    }
+
+    //
+    // link_entries() unit tests
+    //
+
+    #[test]
+    /// test that link_entries() returns ok for valid arguments
+    fn test_link_entries() {
+        // TODO: fix once function properly spec'd w/ Result returned
+    }
+
+    //
+    // get_links() unit tests
+    //
+
+    #[test]
+    /// test that link_entries() returns error for invalid arguments
+    fn test_get_links_invalid() {
+        // check whether function implemented
+        let result = get_links("".to_string(), "");
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
+            assert!(false);
+        }
+
+        // created link between newly-created test entries
+        let test_entry_1 = commit_entry("test1", "test data 1").unwrap();
+        let test_entry_2 = commit_entry("test2", "test data 2").unwrap();
+        link_entries(test_entry_1.clone(), test_entry_2.clone(), "test link");
+
+        // null entry
+        assert_eq!(true, get_links("".to_string(), "test link").is_err());
+
+        // null link tag
+        assert_eq!(true, get_links(test_entry_1, "").is_err());
+    }
+
+    #[test]
+    /// test that link_entries() returns ok for valid arguments
+    fn test_get_links_valid() {
+        // check whether function implemented
+        let result = get_links("".to_string(), "");
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
+            assert!(false);
+        }
+
+        // created link between newly-created test entries
+        let test_entry_1 = commit_entry("test1", "test data 1").unwrap();
+        let test_entry_2 = commit_entry("test2", "test data 2").unwrap();
+        link_entries(test_entry_1.clone(), test_entry_2.clone(), "test link");
+
+        // get test link
+        assert_eq!(true, get_links(test_entry_1, "test link").is_ok());
     }
 }
