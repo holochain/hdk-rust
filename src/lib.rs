@@ -423,10 +423,10 @@ mod test {
             assert!(false);
         }
 
-        // empty property key
+        // test empty property key parameter
         assert_eq!(r#"HashNotFound"#, property("").err().unwrap().to_string());
 
-        // unknown property key
+        // test unknown property key parameter
         assert_eq!(
             r#"HashNotFound"#,
             property("unknown").err().unwrap().to_string()
@@ -442,7 +442,7 @@ mod test {
             assert!(false);
         }
 
-        // known property key
+        // test known property key parameter
         assert_eq!(true, property("Name").is_ok())
     }
 
@@ -459,11 +459,10 @@ mod test {
             assert!(false);
         }
 
-        // empty entry type
-        assert_eq!(
-            r#"HashNotFound"#, // TODO: is this the right error?
-            make_hash("", json!("test_data")).err().unwrap().to_string()
-        )
+        // test empty entry type parameter
+        // TODO: is this the right error?
+        let result = make_hash("", json!("test_data"));
+        assert_eq!(Some(RibosomeError::HashNotFound), result.err());
     }
 
     #[test]
@@ -475,7 +474,7 @@ mod test {
             assert!(false);
         }
 
-        // non-empty entry type w/ various valid forms of entry data
+        // test non-empty entry type parameter w/ various valid forms of entry data
         assert_eq!(true, make_hash("test", json!("")).is_ok());
         assert_eq!(true, make_hash("test", json!("test")).is_ok());
         assert_eq!(true, make_hash("test", json!(1)).is_ok());
@@ -492,6 +491,17 @@ mod test {
     }
 
     //
+    // debug() unit tests
+    //
+
+    #[test]
+    /// test that debug() returns error for invalid arguments
+    fn test_debug() {
+        // TODO: fix once function properly spec'd w/ Result returned
+        assert!(false);
+    }
+
+    //
     // call() unit tests
     //
 
@@ -504,10 +514,12 @@ mod test {
             assert!(false);
         }
 
-        // empty zome name
+        // test empty zome name parameter
+        // TODO: Fix with proper error value
         assert_eq!(true, call("", "test", json!("test")).is_err());
 
-        // empty function name
+        // test empty function name parameter
+        // TODO: Fix with proper error value
         assert_eq!(true, call("test", "", json!("test")).is_err());
     }
 
@@ -520,7 +532,7 @@ mod test {
             assert!(false);
         }
 
-        // valid zome, function, and argument(s)
+        // test valid zome, function, and argument(s) parameters
         assert_eq!(true, call("test", "test", json!("")).is_ok());
     }
 
@@ -537,7 +549,10 @@ mod test {
             assert!(false);
         }
 
+        // test sign empty data parameter
         assert_eq!(true, sign("").is_ok());
+
+        // test sign non-empty data parameter
         assert_eq!(true, sign("test data").is_ok());
     }
 
@@ -553,19 +568,31 @@ mod test {
         if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
+        // TODO: raise issue re move vs borrow ownership of data to be signed
 
-        // invalid (i.e., empty string) arguments
+        // test invalid (i.e., empty string) parameters
+        // TODO: Fix with proper error value
         assert_eq!(true, verify_signature("", "", "").is_err());
 
-        // invalid public key used to verify signature on self-signed test data
-        // TODO: raise issue re move vs borrow ownership of data to be signed
+        // sign test data
         let data = "test data".to_string();
-        let signed_data = sign(data.clone());
-        if let Ok(sig) = signed_data {
-            // test signature invalid per bad signing key
-            let bad_key = "".to_string();
-            assert_eq!(true, verify_signature(sig, data, bad_key).is_err());
-        }
+        let pub_key = get_entry(APP_AGENT_KEY_HASH.to_string()).unwrap();
+        let pub_key = pub_key["public_key"].to_string();
+        let signed = sign(data.clone()).unwrap();
+
+        // test invalid public key parameter
+        // TODO: Fix with proper error value
+        assert_eq!(
+            true,
+            verify_signature(signed.clone(), data.clone(), "bad key".to_string()).is_err()
+        );
+
+        // test invalid signature parameter
+        // TODO: Fix with proper error value
+        assert_eq!(
+            true,
+            verify_signature("bad signature".to_string(), data, pub_key).is_err()
+        );
     }
 
     #[test]
@@ -577,16 +604,14 @@ mod test {
             assert!(false);
         }
 
+        // sign test data
+        let data = "test data".to_string();
+        let pub_key = get_entry(APP_AGENT_KEY_HASH.to_string()).unwrap();
+        let pub_key = pub_key["public_key"].to_string();
+        let signed = sign(data.clone()).unwrap();
+
         // get agent public key to verify self-signed data
-        let key_entry = get_entry(APP_AGENT_KEY_HASH.to_string());
-        if let Ok(entry_value) = key_entry {
-            let pub_key = entry_value["public_key"].to_string();
-            let data = "test data".to_string();
-            let signed_data = sign(data.clone());
-            if let Ok(sig) = signed_data {
-                assert_eq!(true, verify_signature(sig, data, pub_key).is_ok());
-            }
-        }
+        assert_eq!(true, verify_signature(signed, data, pub_key).is_ok());
     }
 
     //
@@ -595,7 +620,6 @@ mod test {
 
     #[test]
     /// test that commit_entry() returns error for invalid arguments
-    ///
     fn test_commit_entry_invalid() {
         // check whether function implemented
         let result = commit_entry("", "");
@@ -604,12 +628,12 @@ mod test {
         }
 
         // invalid (i.e., empty string) arguments
+        // TODO: Fix with proper error value
         assert_eq!(true, commit_entry("", "").is_err());
     }
 
     #[test]
     /// test that commit_entry() returns ok for valid arguments
-    ///
     fn test_commit_entry_valid() {
         // check whether function implemented
         let result = commit_entry("", "");
@@ -627,7 +651,6 @@ mod test {
 
     #[test]
     /// test that update_entry() returns error for invalid arguments
-    ///
     fn test_update_entry_invalid() {
         // check whether function implemented
         let result = update_entry("", json!(""), "".to_string());
@@ -635,18 +658,21 @@ mod test {
             assert!(false);
         }
 
-        // invalid entry
-        let bad_entry = "".to_string();
-        assert_eq!(true, update_entry("test", json!(""), bad_entry).is_err());
+        // test invalid invalid entry hash
+        // TODO: Fix with proper error value
+        assert_eq!(
+            true,
+            update_entry("test", json!(""), "".to_string()).is_err()
+        );
 
-        // invalid entry type
+        // test invalid entry type
+        // TODO: Fix with proper error value
         let test_entry = commit_entry("test", "test_data").unwrap();
         assert_eq!(true, update_entry("", json!(""), test_entry).is_err());
     }
 
     #[test]
-    /// test that entry() returns ok for valid arguments
-    ///
+    /// test that update_entry() returns ok for valid arguments
     fn test_update_entry_valid() {
         // check whether function implemented
         let result = update_entry("", json!(""), "".to_string());
@@ -654,7 +680,7 @@ mod test {
             assert!(false);
         }
 
-        // invalid (i.e., empty string) arguments
+        // test update on test entry
         let test_entry = commit_entry("test", "test data").unwrap();
         assert_eq!(
             true,
@@ -675,12 +701,12 @@ mod test {
             assert!(false);
         }
 
-        // valid invocation
+        // test update agent
         assert_eq!(true, update_agent().is_ok());
     }
 
     //
-    // commit_entry() unit tests
+    // remove_entry() unit tests
     //
 
     #[test]
@@ -692,7 +718,8 @@ mod test {
             assert!(false);
         }
 
-        // invalid (i.e., empty string) arguments
+        // test invalid (i.e., empty string) parameters
+        // TODO: Fix with proper error value
         assert_eq!(
             true,
             remove_entry("".to_string(), "remove_entry_invalid() test").is_err()
@@ -701,7 +728,6 @@ mod test {
 
     #[test]
     /// test that remove_entry() returns ok for valid arguments
-    ///
     fn test_remove_entry_valid() {
         // check whether function implemented
         let result = remove_entry("".to_string(), "");
@@ -709,8 +735,10 @@ mod test {
             assert!(false);
         }
 
-        // invalid (i.e., empty string) arguments
+        // commit test entry
         let test_entry = commit_entry("test", "test data").unwrap();
+
+        // test remove on test entry
         assert_eq!(
             true,
             remove_entry(test_entry, "remove_entry_valid() test").is_ok()
@@ -730,10 +758,11 @@ mod test {
             assert!(false);
         }
 
-        // get newly-committed test entry
+        // commit test entry
         let test_entry = commit_entry("test", "test data").unwrap();
+
+        // test get test entry
         let result = get_entry(test_entry);
-        assert_eq!(true, result.is_ok());
         assert_eq!(Some(json!("test data")), result.ok());
     }
 
@@ -746,17 +775,17 @@ mod test {
             assert!(false);
         }
 
-        // null entry hash
+        // test null entry hash parameter
+        // TODO: Fix with proper error value
         assert_eq!(true, get_entry("".to_string()).is_err());
 
-        // get removed test entry
+        // commit and then remove test entry
         let test_entry = commit_entry("test", "test data").unwrap();
         remove_entry(test_entry.clone(), "test data").unwrap();
+
+        // test get on removed test entry
         let result = get_entry(test_entry);
-        assert_eq!(true, result.is_err());
-        if let Some(RibosomeError::HashNotFound) = result.err() {
-            assert!(true);
-        }
+        assert_eq!(Some(RibosomeError::HashNotFound), result.err());
     }
 
     //
@@ -767,6 +796,7 @@ mod test {
     /// test that link_entries() returns ok for valid arguments
     fn test_link_entries() {
         // TODO: fix once function properly spec'd w/ Result returned
+        assert!(false);
     }
 
     //
@@ -774,7 +804,7 @@ mod test {
     //
 
     #[test]
-    /// test that link_entries() returns error for invalid arguments
+    /// test that get_links() returns error for invalid arguments
     fn test_get_links_invalid() {
         // check whether function implemented
         let result = get_links("".to_string(), "");
@@ -782,20 +812,22 @@ mod test {
             assert!(false);
         }
 
-        // created link between newly-created test entries
+        // commit & link test entries
         let test_entry_1 = commit_entry("test1", "test data 1").unwrap();
         let test_entry_2 = commit_entry("test2", "test data 2").unwrap();
         link_entries(test_entry_1.clone(), test_entry_2.clone(), "test link");
 
-        // null entry
+        // test null entry hash parameter
+        // TODO: Fix with proper error value
         assert_eq!(true, get_links("".to_string(), "test link").is_err());
 
-        // null link tag
+        // test null link tag parameter
+        // TODO: Fix with proper error value
         assert_eq!(true, get_links(test_entry_1, "").is_err());
     }
 
     #[test]
-    /// test that link_entries() returns ok for valid arguments
+    /// test that get_links() returns ok for valid arguments
     fn test_get_links_valid() {
         // check whether function implemented
         let result = get_links("".to_string(), "");
@@ -803,12 +835,88 @@ mod test {
             assert!(false);
         }
 
-        // created link between newly-created test entries
+        // commit & link test entries
         let test_entry_1 = commit_entry("test1", "test data 1").unwrap();
         let test_entry_2 = commit_entry("test2", "test data 2").unwrap();
         link_entries(test_entry_1.clone(), test_entry_2.clone(), "test link");
 
-        // get test link
+        // test get on test link
+        // TODO: verify link end-point entries
         assert_eq!(true, get_links(test_entry_1, "test link").is_ok());
+        assert_eq!(true, get_links(test_entry_2, "test link").is_ok());
     }
+
+    //
+    // query() unit tests
+    //
+
+    #[test]
+    /// test query() returns Result
+    fn test_query() {
+        // check whether function implemented
+        let result = query();
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
+            assert!(false);
+        }
+
+        // TODO: fix once function properly spec'd w/ options parameter
+        assert!(false);
+    }
+
+    //
+    // send() unit tests
+    //
+
+    #[test]
+    /// test send() returns error for invalid parameters
+    fn test_send_invalid() {
+        // check whether function implemented
+        let result = send("".to_string(), json!(""));
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
+            assert!(false);
+        }
+
+        // test null entry hash parameter
+        // TODO: Fix with proper error value
+        assert_eq!(true, send("".to_string(), json!("test message")).is_err());
+    }
+
+    #[test]
+    /// test send() returns ok for valid parameters
+    fn test_send_valid() {
+        // check whether function implemented
+        let result = send("".to_string(), json!(""));
+        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
+            assert!(false);
+        }
+
+        // test send message to self (i.e., own agent)
+        assert_eq!(
+            true,
+            send(APP_AGENT_KEY_HASH.to_string(), json!("test message")).is_ok()
+        );
+    }
+
+    //
+    // start_bundle() unit tests
+    //
+
+    #[test]
+    /// test start_bundle() returns error for invalid parameters
+    fn test_start_bundle() {
+        // TODO: fix once function properly spec'd w/ Result returned
+        assert!(false);
+    }
+
+    //
+    // close_bundle() unit tests
+    //
+
+    #[test]
+    /// test close_bundle() returns error for invalid parameters
+    fn test_close_bundle() {
+        // TODO: fix once function properly spec'd w/ Result returned
+        assert!(false);
+    }
+
 }
