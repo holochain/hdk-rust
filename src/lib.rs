@@ -18,7 +18,7 @@ pub mod macros;
 
 use self::RibosomeError::*;
 use globals::*;
-use holochain_wasm_utils::{memory_allocation::*, memory_serialization::*};
+use holochain_wasm_utils::memory_serialization::*;
 use std::{error::Error, fmt};
 
 pub type HashString = String;
@@ -35,7 +35,7 @@ lazy_static! {
   /// Nodes must run the same DNA to be on the same DHT.
   pub static ref APP_DNA_HASH: &'static HashString = &APP_GLOBALS.app_dna_hash;
 
-  /// The identity string used to initialize this Holochain with `hcadmin init`.
+  /// The identity string used when the chain was first initialized.
   /// If you used JSON to embed multiple properties (such as FirstName, LastName, Email, etc),
   /// they can be retrieved here as App.Agent.FirstName, etc. (FIXME)
   pub static ref APP_AGENT_ID_STR: &'static str = &APP_GLOBALS.app_agent_id_str;
@@ -220,17 +220,20 @@ pub fn make_hash<S: Into<String>>(
 }
 
 /// FIXME DOC
-pub fn debug(msg: &str) {
-    /* TODO: Fix
+pub fn debug(msg: &str) -> Result<(), RibosomeError> {
     let mut mem_stack = unsafe { G_MEM_STACK.unwrap() };
-    let allocation_of_input = serialize(&mut mem_stack, msg);
+    let maybe_allocation_of_input = serialize(&mut mem_stack, msg);
+    if let Err(err_code) = maybe_allocation_of_input {
+        return Err(RibosomeError::RibosomeFailed(err_code.to_string()));
+    }
+    let allocation_of_input = maybe_allocation_of_input.unwrap();
     unsafe {
         hc_debug(allocation_of_input.encode());
     }
     mem_stack
         .deallocate(allocation_of_input)
         .expect("should be able to deallocate input that has been allocated on memory stack");
-    */
+    Ok(())
 }
 
 /// FIXME DOC
@@ -261,10 +264,10 @@ pub fn verify_signature<S: Into<String>>(
 
 /// FIXME DOC
 pub fn commit_entry(
-    _entry_type_name: &str,
-    _entry_content: &str,
+    entry_type_name: &str,
+    entry_content: serde_json::Value,
 ) -> Result<HashString, RibosomeError> {
-    /* TODO: Fix
+    /* TODO: FIXME
     #[derive(Serialize, Default)]
     struct CommitInputStruct {
         entry_type_name: String,
@@ -283,10 +286,14 @@ pub fn commit_entry(
 
     // Put args in struct and serialize into memory
     let input = CommitInputStruct {
-        entry_type_name: _entry_type_name.to_string(),
-        entry_content: _entry_content.to_string(),
+        entry_type_name: entry_type_name.to_string(),
+        entry_content: entry_content.to_string(),
     };
-    let allocation_of_input = serialize(&mut mem_stack, input);
+    let maybe_allocation_of_input = serialize(&mut mem_stack, input);
+    if let Err(err_code) = maybe_allocation_of_input {
+        return Err(RibosomeError::RibosomeFailed(err_code.to_string()));
+    }
+    let allocation_of_input = maybe_allocation_of_input.unwrap();
 
     // Call WASMI-able commit
     let encoded_allocation_of_result: u32;
@@ -307,6 +314,7 @@ pub fn commit_entry(
 
     // Return hash
     Ok(output.hash.to_string())
+    
     */
     Err(RibosomeError::FunctionNotImplemented)
 }
@@ -515,11 +523,11 @@ mod test {
         }
 
         // test empty zome name parameter
-        // TODO: Fix with proper error value
+        // TODO: FIXME with proper error value
         assert_eq!(true, call("", "test", json!("test")).is_err());
 
         // test empty function name parameter
-        // TODO: Fix with proper error value
+        // TODO: FIXME with proper error value
         assert_eq!(true, call("test", "", json!("test")).is_err());
     }
 
@@ -571,7 +579,7 @@ mod test {
         // TODO: raise issue re move vs borrow ownership of data to be signed
 
         // test invalid (i.e., empty string) parameters
-        // TODO: Fix with proper error value
+        // TODO: FIXME with proper error value
         assert_eq!(true, verify_signature("", "", "").is_err());
 
         // sign test data
@@ -581,14 +589,14 @@ mod test {
         let signed = sign(data.clone()).unwrap();
 
         // test invalid public key parameter
-        // TODO: Fix with proper error value
+        // TODO: FIXME with proper error value
         assert_eq!(
             true,
             verify_signature(signed.clone(), data.clone(), "bad key".to_string()).is_err()
         );
 
         // test invalid signature parameter
-        // TODO: Fix with proper error value
+        // TODO: FIXME with proper error value
         assert_eq!(
             true,
             verify_signature("bad signature".to_string(), data, pub_key).is_err()
@@ -622,27 +630,27 @@ mod test {
     /// test that commit_entry() returns error for invalid arguments
     fn test_commit_entry_invalid() {
         // check whether function implemented
-        let result = commit_entry("", "");
+        let result = commit_entry("", json!(""));
         if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
         // invalid (i.e., empty string) arguments
-        // TODO: Fix with proper error value
-        assert_eq!(true, commit_entry("", "").is_err());
+        // TODO: FIXME with proper error value
+        assert_eq!(true, commit_entry("", json!("")).is_err());
     }
 
     #[test]
     /// test that commit_entry() returns ok for valid arguments
     fn test_commit_entry_valid() {
         // check whether function implemented
-        let result = commit_entry("", "");
+        let result = commit_entry("", json!(""));
         if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
             assert!(false);
         }
 
         // invalid (i.e., empty string) arguments
-        assert_eq!(true, commit_entry("test", "test data").is_ok());
+        assert_eq!(true, commit_entry("test", json!("test data")).is_ok());
     }
 
     //
@@ -659,15 +667,15 @@ mod test {
         }
 
         // test invalid invalid entry hash
-        // TODO: Fix with proper error value
+        // TODO: FIXME with proper error value
         assert_eq!(
             true,
             update_entry("test", json!(""), "".to_string()).is_err()
         );
 
         // test invalid entry type
-        // TODO: Fix with proper error value
-        let test_entry = commit_entry("test", "test_data").unwrap();
+        // TODO: FIXME with proper error value
+        let test_entry = commit_entry("test", json!("test_data")).unwrap();
         assert_eq!(true, update_entry("", json!(""), test_entry).is_err());
     }
 
@@ -681,7 +689,7 @@ mod test {
         }
 
         // test update on test entry
-        let test_entry = commit_entry("test", "test data").unwrap();
+        let test_entry = commit_entry("test", json!("test data")).unwrap();
         assert_eq!(
             true,
             update_entry("test", json!("test data"), test_entry).is_ok()
@@ -719,7 +727,7 @@ mod test {
         }
 
         // test invalid (i.e., empty string) parameters
-        // TODO: Fix with proper error value
+        // TODO: FIXME with proper error value
         assert_eq!(
             true,
             remove_entry("".to_string(), "remove_entry_invalid() test").is_err()
@@ -736,7 +744,7 @@ mod test {
         }
 
         // commit test entry
-        let test_entry = commit_entry("test", "test data").unwrap();
+        let test_entry = commit_entry("test", json!("test data")).unwrap();
 
         // test remove on test entry
         assert_eq!(
@@ -759,7 +767,7 @@ mod test {
         }
 
         // commit test entry
-        let test_entry = commit_entry("test", "test data").unwrap();
+        let test_entry = commit_entry("test", json!("test data")).unwrap();
 
         // test get test entry
         let result = get_entry(test_entry);
@@ -776,11 +784,11 @@ mod test {
         }
 
         // test null entry hash parameter
-        // TODO: Fix with proper error value
+        // TODO: FIXME with proper error value
         assert_eq!(true, get_entry("".to_string()).is_err());
 
         // commit and then remove test entry
-        let test_entry = commit_entry("test", "test data").unwrap();
+        let test_entry = commit_entry("test", json!("test data")).unwrap();
         remove_entry(test_entry.clone(), "test data").unwrap();
 
         // test get on removed test entry
@@ -813,16 +821,16 @@ mod test {
         }
 
         // commit & link test entries
-        let test_entry_1 = commit_entry("test1", "test data 1").unwrap();
-        let test_entry_2 = commit_entry("test2", "test data 2").unwrap();
+        let test_entry_1 = commit_entry("test1", json!("test data 1")).unwrap();
+        let test_entry_2 = commit_entry("test2", json!("test data 2")).unwrap();
         link_entries(test_entry_1.clone(), test_entry_2.clone(), "test link");
 
         // test null entry hash parameter
-        // TODO: Fix with proper error value
+        // TODO: FIXME with proper error value
         assert_eq!(true, get_links("".to_string(), "test link").is_err());
 
         // test null link tag parameter
-        // TODO: Fix with proper error value
+        // TODO: FIXME with proper error value
         assert_eq!(true, get_links(test_entry_1, "").is_err());
     }
 
@@ -836,8 +844,8 @@ mod test {
         }
 
         // commit & link test entries
-        let test_entry_1 = commit_entry("test1", "test data 1").unwrap();
-        let test_entry_2 = commit_entry("test2", "test data 2").unwrap();
+        let test_entry_1 = commit_entry("test1", json!("test data 1")).unwrap();
+        let test_entry_2 = commit_entry("test2", json!("test data 2")).unwrap();
         link_entries(test_entry_1.clone(), test_entry_2.clone(), "test link");
 
         // test get on test link
@@ -877,7 +885,7 @@ mod test {
         }
 
         // test null entry hash parameter
-        // TODO: Fix with proper error value
+        // TODO: FIXME with proper error value
         assert_eq!(true, send("".to_string(), json!("test message")).is_err());
     }
 
