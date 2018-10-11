@@ -63,6 +63,7 @@ const VERSION: u16 = 1;
 const VERSION_STR: &'static str = "1";
 
 // HC.HashNotFound
+#[derive(Debug)]
 pub enum RibosomeError {
     RibosomeFailed(String),
     FunctionNotImplemented,
@@ -181,8 +182,7 @@ pub fn make_hash<S: Into<String>>(
     _entry_data: serde_json::Value,
 ) -> Result<HashString, RibosomeError> {
     // FIXME
-    Err(RibosomeError::FunctionNotImplemented)
-}
+    Err(RibosomeError::FunctionNotImplemented)}
 
 /// FIXME DOC
 pub fn debug(msg: &str) -> Result<(), RibosomeError> {
@@ -238,9 +238,9 @@ pub fn commit_entry(
         entry_content: String,
     }
 
-    #[derive(Deserialize, Serialize, Default)]
+    #[derive(Deserialize, Serialize, Default,Debug)]
     struct CommitOutputStruct {
-        hash: String,
+        address: String,
     }
 
     let mut mem_stack: SinglePageStack;
@@ -266,6 +266,7 @@ pub fn commit_entry(
     }
     // Deserialize complex result stored in memory and check for ERROR in encoding
     let result = try_deserialize_allocation(encoded_allocation_of_result as u32);
+
     if let Err(err_str) = result {
         return Err(RibosomeError::RibosomeFailed(err_str));
     }
@@ -277,7 +278,7 @@ pub fn commit_entry(
         .expect("deallocate failed");
 
     // Return hash
-    Ok(output.hash.to_string())
+    Ok(output.address.to_string())
 }
 
 /// FIXME DOC
@@ -313,11 +314,6 @@ pub fn get_entry(entry_hash: HashString) -> Result<serde_json::Value, RibosomeEr
         address: String,
     }
 
-    #[derive(Deserialize, Serialize, Default)]
-    struct GetOutputStruct {
-        entry: String,
-    }
-
     let mut mem_stack: SinglePageStack;
     unsafe {
         mem_stack = G_MEM_STACK.unwrap();
@@ -327,7 +323,11 @@ pub fn get_entry(entry_hash: HashString) -> Result<serde_json::Value, RibosomeEr
     let input = GetInputStruct {
         address: entry_hash.to_string(),
     };
-    let allocation_of_input = serialize(&mut mem_stack, input);
+    let maybe_allocation_of_input = serialize(&mut mem_stack, input);
+    if let Err(err_code) = maybe_allocation_of_input {
+        return Err(RibosomeError::RibosomeFailed(err_code.to_string()));
+    }
+    let allocation_of_input = maybe_allocation_of_input.unwrap();
 
     // Call WASMI-able commit
     let encoded_allocation_of_result: u32;
@@ -339,7 +339,7 @@ pub fn get_entry(entry_hash: HashString) -> Result<serde_json::Value, RibosomeEr
     if let Err(err_str) = result {
         return Err(RibosomeError::RibosomeFailed(err_str));
     }
-    let output: GetOutputStruct = result.unwrap();
+    let output: serde_json::Value = result.unwrap();
 
     // Free result & input allocations and all allocations made inside commit()
     mem_stack
@@ -347,7 +347,7 @@ pub fn get_entry(entry_hash: HashString) -> Result<serde_json::Value, RibosomeEr
         .expect("deallocate failed");
 
     // Return entry
-    Ok(json!(output))
+    Ok(output)
 }
 
 /// FIXME DOC

@@ -30,11 +30,11 @@ pub extern "C" fn check_global(encoded_allocation_of_input: u32) -> u32 {
 
 #[derive(Deserialize, Serialize, Default)]
 struct CommitOutputStruct {
-    hash: String,
+    address: String,
 }
 
 #[no_mangle]
-pub extern "C" fn validate_commit(_encoded_allocation_of_input: u32) -> u32 {
+pub extern "C" fn validate_testEntryType(_encoded_allocation_of_input: u32) -> u32 {
     0
 }
 
@@ -63,9 +63,7 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
     ));
 
    let res_obj = match res {
-        Ok(hash_str) => CommitOutputStruct {
-            hash: hash_str
-        },
+        Ok(hash_str) => CommitOutputStruct {address: hash_str},
         Err(RibosomeError::RibosomeFailed(err_str)) => {
             unsafe {
                 return serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), err_str) as u32;
@@ -90,19 +88,19 @@ zome_functions! {
         let res = hdk::commit_entry(&entry_type_name, json!(
             entry_content
         ));
+
         match res {
-            Ok(hash_str) => Ok(CommitOutputStruct { hash: hash_str }),
-            Err(RibosomeError::RibosomeFailed(err_str)) => Err(err_str),
+            Ok(hash_str) => json!({ "address": hash_str }),
+            Err(RibosomeError::RibosomeFailed(err_str)) => json!({"Err":err_str}),
             Err(_) => unreachable!(),
         }
     }
 
     check_get_entry: |entry_hash: String| {
-panic!("fish");
         let res = hdk::get_entry(entry_hash);
         match res {
-            Ok(entry_str) => Ok(GetOutputStruct { entry: entry_str.to_string() }),
-            Err(RibosomeError::RibosomeFailed(err_str)) => Err(err_str),
+            Ok(entry_str) => json!({"entry": entry_str.to_string() }),
+            Err(RibosomeError::RibosomeFailed(err_str)) => json!({"get entry Err":err_str}),
             Err(_) => unreachable!(),
         }
     }

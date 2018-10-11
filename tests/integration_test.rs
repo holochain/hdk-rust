@@ -56,10 +56,11 @@ fn can_commit_entry() {
         "test_zome",
         "test_cap",
         "check_commit_entry",
-        r#"{ "entry_type_name": "typename1", "entry_content": "some content" }"#,
+        r#"{ "entry_type_name": "testEntryType", "entry_content": "some content" }"#,
     );
     println!("\t result = {:?}", result);
     assert!(result.is_ok(), "result = {:?}", result);
+    assert_eq!(result.unwrap(),r#"{"address":"QmbC71ggSaEa1oVPTeNN7ZoB93DYhxowhKSF6Yia2VjMy5"}"#);
 }
 
 #[test]
@@ -70,10 +71,11 @@ fn can_commit_entry_macro() {
         "test_zome",
         "test_cap",
         "check_commit_entry_macro",
-        r#"{ "entry_type_name": "typename1", "entry_content": "some content" }"#,
+        r#"{ "entry_type_name": "testEntryType", "entry_content": "some content" }"#,
     );
     println!("\t result = {:?}", result);
     assert!(result.is_ok(), "\t result = {:?}", result);
+    assert_eq!(result.unwrap(),r#"{"address":"QmbC71ggSaEa1oVPTeNN7ZoB93DYhxowhKSF6Yia2VjMy5"}"#);
 }
 
 #[test]
@@ -112,10 +114,9 @@ fn can_get_entry() {
         "test_zome",
         "test_cap",
         "check_get_entry",
-        r#"QmbC71ggSaEa1oVPTeNN7ZoB93DYhxowhKSF6Yia2VjMy5"#,
+        r#"{"entry_hash":"QmbC71ggSaEa1oVPTeNN7ZoB93DYhxowhKSF6Yia2VjMy5"}"#,
     );
-    println!("THEHAHSH: {:?}", result);
+    println!("\t can_get_entry result = {:?}", result);
     assert!(result.is_ok(), "\t result = {:?}", result);
-    assert_eq!(false,true);
-
+    assert_eq!(result.unwrap(),r#"some content"#);
 }
