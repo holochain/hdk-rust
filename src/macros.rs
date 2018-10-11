@@ -50,23 +50,23 @@ macro_rules! zome_functions {
             #[no_mangle]
             pub extern "C" fn $func_name(encoded_allocation_of_input: u32) -> u32 {
 
+                ::hdk::init_memory_stack(encoded_allocation_of_input);
+
                 // Macro'd InputStruct
                 #[derive(Deserialize)]
                 struct InputStruct {
                     $($param : $param_type),*
                 }
 
+                // Deserialize input
+                let maybe_input = try_deserialize_arguments!(encoded_allocation_of_input);
+                let input: InputStruct = maybe_input.unwrap();
+
                 // Macro'd function body
                 fn execute(params: InputStruct) -> impl ::serde::Serialize {
                     let InputStruct { $($param),* } = params;
                     $main_block
                 }
-
-                ::hdk::init_memory_stack(encoded_allocation_of_input);
-
-                // Deserialize input
-                let maybe_input = try_deserialize_arguments!(encoded_allocation_of_input);
-                let input: InputStruct = maybe_input.unwrap();
 
                 // Execute inner function
                 let output_obj = execute(input);
@@ -91,6 +91,8 @@ macro_rules! validations {
             #[no_mangle]
             pub extern "C" fn $func_name(encoded_allocation_of_input: u32) -> u32 {
 
+                ::hdk::init_memory_stack(encoded_allocation_of_input);
+
                 // Macro'd InputStruct
                 #[derive(Deserialize)]
                 struct InputStruct {
@@ -104,14 +106,6 @@ macro_rules! validations {
                     ctx : ::hdk::ValidationData,
                 }
 
-                // Macro'd function body
-                fn execute(params: InputStruct) -> Result<(), String> {
-                    let InputStruct { $entry, $ctx } = params;
-                    $main_block
-                }
-
-                ::hdk::init_memory_stack(encoded_allocation_of_input);
-
                 // Deserialize input
                 let maybe_input = try_deserialize_arguments!(encoded_allocation_of_input);
                 let input_generic: InputStructGeneric = maybe_input.unwrap();
@@ -120,7 +114,12 @@ macro_rules! validations {
                     $ctx: input_generic.ctx,
                 };
 
-
+                // Macro'd function body
+                fn execute(params: InputStruct) -> Result<(), String> {
+                    let InputStruct { $entry, $ctx } = params;
+                    $main_block
+                }
+                
                 // Execute inner function
                 let output_result = execute(input);
 
