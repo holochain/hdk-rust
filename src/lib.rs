@@ -56,7 +56,7 @@ lazy_static! {
   /// Nodes must run the same DNA to be on the same DHT.
   pub static ref APP_DNA_HASH: &'static HashString = &APP_GLOBALS.app_dna_hash;
 
-  /// The identity string used to initialize this Holochain with `hcadmin init`.
+  /// The identity string used when the chain was first initialized.
   /// If you used JSON to embed multiple properties (such as FirstName, LastName, Email, etc),
   /// they can be retrieved here as App.Agent.FirstName, etc. (FIXME)
   pub static ref APP_AGENT_ID_STR: &'static str = &APP_GLOBALS.app_agent_id_str;
