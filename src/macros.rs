@@ -1,3 +1,17 @@
+#[macro_export]
+macro_rules! try_deserialize_arguments {
+    ($encoded_allocation_of_input:ident) => (
+        {
+            let maybe_input = ::holochain_wasm_utils::memory_serialization::try_deserialize_allocation($encoded_allocation_of_input);
+            if let Err(_) = maybe_input {
+                return ::holochain_wasm_utils::error::RibosomeErrorCode::ArgumentDeserializationFailed as u32;
+            }
+            maybe_input
+        }
+    );
+}
+
+
 /// A macro for easily writing zome functions
 ///
 /// # Examples
@@ -51,10 +65,7 @@ macro_rules! zome_functions {
                 ::hdk::init_memory_stack(encoded_allocation_of_input);
 
                 // Deserialize input
-                let maybe_input = ::holochain_wasm_utils::memory_serialization::try_deserialize_allocation(encoded_allocation_of_input);
-                if let Err(_) = maybe_input {
-                    return ::holochain_wasm_utils::error::RibosomeErrorCode::ArgumentDeserializationFailed as u32;
-                }
+                let maybe_input = try_deserialize_arguments!(encoded_allocation_of_input);
                 let input: InputStruct = maybe_input.unwrap();
 
                 // Execute inner function
@@ -102,11 +113,7 @@ macro_rules! validations {
                 ::hdk::init_memory_stack(encoded_allocation_of_input);
 
                 // Deserialize input
-                let maybe_input = ::holochain_wasm_utils::memory_serialization::try_deserialize_allocation(encoded_allocation_of_input);
-                if let Err(err) = maybe_input {
-                    hdk::debug(&format!("Error deserializing: {}", err));
-                    return ::holochain_wasm_utils::error::RibosomeErrorCode::ArgumentDeserializationFailed as u32;
-                }
+                let maybe_input = try_deserialize_arguments!(encoded_allocation_of_input);
                 let input_generic: InputStructGeneric = maybe_input.unwrap();
                 let input = InputStruct {
                     $entry: input_generic.entry,
