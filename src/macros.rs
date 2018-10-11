@@ -58,7 +58,9 @@ macro_rules! zome_functions {
                 // Deserialize input
                 let maybe_input = ::holochain_wasm_utils::memory_serialization::try_deserialize_allocation(encoded_allocation_of_input);
                 if let Err(_) = maybe_input {
-                    return ::holochain_wasm_utils::error::RibosomeReturnCode::ArgumentDeserializationFailed as u32;
+                    // TODO: FIXME
+                    // return ::holochain_wasm_utils::error::RibosomeReturnCode::ArgumentDeserializationFailed as u32;
+                    return ::holochain_wasm_utils::error::RibosomeReturnCode::Failure as u32;
                 }
                 let input: InputStruct = maybe_input.unwrap();
 

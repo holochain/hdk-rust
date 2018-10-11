@@ -77,12 +77,7 @@ impl RibosomeError {
     }
 
     pub fn to_json(&self) -> serde_json::Value {
-        let err_str = match self {
-            RibosomeFailed(error_desc) => error_desc,
-            FunctionNotImplemented => "Function not implemented",
-            HashNotFound => "Hash not found",
-        }.to_string();
-        json!({ "error": err_str })
+        json!({ "error": self.description() })
     }
 }
 
@@ -99,9 +94,9 @@ impl fmt::Display for RibosomeError {
 impl Error for RibosomeError {
     fn description(&self) -> &str {
         match self {
+            RibosomeFailed(error_desc) => error_desc,
             FunctionNotImplemented => "Function not implemented",
             HashNotFound => "Hash not found",
-            RibosomeFailed(error_desc) => error_desc,
         }
     }
 }
@@ -226,6 +221,7 @@ pub fn make_hash<S: Into<String>>(
 
 /// FIXME DOC
 pub fn debug(msg: &str) {
+    /* TODO: Fix
     let mut mem_stack = unsafe { G_MEM_STACK.unwrap() };
     let allocation_of_input = serialize(&mut mem_stack, msg);
     unsafe {
@@ -234,6 +230,7 @@ pub fn debug(msg: &str) {
     mem_stack
         .deallocate(allocation_of_input)
         .expect("should be able to deallocate input that has been allocated on memory stack");
+    */
 }
 
 /// FIXME DOC
@@ -267,6 +264,7 @@ pub fn commit_entry(
     _entry_type_name: &str,
     _entry_content: &str,
 ) -> Result<HashString, RibosomeError> {
+    /* TODO: Fix
     #[derive(Serialize, Default)]
     struct CommitInputStruct {
         entry_type_name: String,
@@ -309,6 +307,8 @@ pub fn commit_entry(
 
     // Return hash
     Ok(output.hash.to_string())
+    */
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
