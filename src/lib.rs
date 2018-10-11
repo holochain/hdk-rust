@@ -18,9 +18,31 @@ pub mod macros;
 
 use self::RibosomeError::*;
 use globals::*;
-use holochain_wasm_utils::{memory_allocation::*, memory_serialization::*};
+use holochain_wasm_utils::{
+    memory_serialization::*, memory_allocation::*,
+    validation::*
+};
+pub use holochain_wasm_utils::validation::*;
 
 pub type HashString = String;
+
+pub fn init_memory_stack(encoded_allocation_of_input: u32) {
+    // Actual program
+    // Init memory stack
+    unsafe {
+        G_MEM_STACK =
+            Some(SinglePageStack::from_encoded(encoded_allocation_of_input));
+    }
+}
+
+pub fn serialize_wasm_output<T: serde::Serialize>(output: T) -> u32
+{
+    // Serialize output in WASM memory
+    unsafe {
+        return serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), output) as u32;
+    }
+}
+
 
 //--------------------------------------------------------------------------------------------------
 // APP GLOBAL VARIABLES
@@ -235,7 +257,7 @@ pub fn commit_entry(
     #[derive(Serialize, Default)]
     struct CommitInputStruct {
         entry_type_name: String,
-        entry_content: String,
+        entry_content: serde_json::Value,
     }
 
     #[derive(Deserialize, Serialize, Default)]
@@ -251,7 +273,7 @@ pub fn commit_entry(
     // Put args in struct and serialize into memory
     let input = CommitInputStruct {
         entry_type_name: entry_type_name.to_string(),
-        entry_content: entry_content.to_string(),
+        entry_content: entry_content,
     };
     let maybe_allocation_of_input = serialize(&mut mem_stack, input);
     if let Err(err_code) = maybe_allocation_of_input {

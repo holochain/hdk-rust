@@ -6,7 +6,9 @@ extern crate serde;
 extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
+extern crate boolinator;
 
+use boolinator::Boolinator;
 use hdk::globals::G_MEM_STACK;
 use holochain_wasm_utils::{error::RibosomeErrorCode, memory_serialization::*, memory_allocation::*};
 use hdk::RibosomeError;
@@ -52,11 +54,11 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
     if let Err(_) = result {
         return RibosomeErrorCode::ArgumentDeserializationFailed as u32;
     }
-    let input: CommitInputStruct = result.unwrap();
 
-    let res = hdk::commit_entry(&input.entry_type_name, json!(
-        &input.entry_content
-    ));
+    let input: CommitInputStruct = result.unwrap();
+    let res = hdk::commit_entry(&input.entry_type_name, json!({
+        "entry_content": &input.entry_content
+    }));
 
    let res_obj = match res {
         Ok(hash_str) => CommitOutputStruct {
@@ -90,7 +92,7 @@ zome_functions! {
 }
 
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 struct TweetResponse {
     first: String,
     second: String,
@@ -100,5 +102,20 @@ zome_functions! {
     send_tweet: |author: String, content: String| {
 
         TweetResponse { first: author,  second: content}
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+struct TestEntryType {
+    stuff: String,
+}
+
+validations! {
+    [ENTRY] validate_testEntryType {
+        [hdk::ValidationPackage::Entry]
+        |entry: TestEntryType, _ctx: hdk::ValidationData| {
+            (entry.stuff != "FAIL")
+                .ok_or_else(|| "FAIL content is not allowed".to_string())
+        }
     }
 }
