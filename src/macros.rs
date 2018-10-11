@@ -48,12 +48,7 @@ macro_rules! zome_functions {
                     $main_block
                 }
 
-                // Actual program
-                // Init memory stack
-                unsafe {
-                    ::hdk::globals::G_MEM_STACK =
-                        Some(::holochain_wasm_utils::memory_allocation::SinglePageStack::from_encoded(encoded_allocation_of_input));
-                }
+                ::hdk::init_memory_stack(encoded_allocation_of_input);
 
                 // Deserialize input
                 let maybe_input = ::holochain_wasm_utils::memory_serialization::try_deserialize_allocation(encoded_allocation_of_input);
@@ -65,10 +60,7 @@ macro_rules! zome_functions {
                 // Execute inner function
                 let output_obj = execute(input);
 
-                // Serialize output in WASM memory
-                unsafe {
-                    return ::holochain_wasm_utils::memory_serialization::serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), output_obj) as u32;
-                }
+                ::hdk::serialize_wasm_output(output_obj)
             }
         )+
     );
@@ -107,12 +99,7 @@ macro_rules! validations {
                     $main_block
                 }
 
-                // Actual program
-                // Init memory stack
-                unsafe {
-                    ::hdk::globals::G_MEM_STACK =
-                        Some(::holochain_wasm_utils::memory_allocation::SinglePageStack::from_encoded(encoded_allocation_of_input));
-                }
+                ::hdk::init_memory_stack(encoded_allocation_of_input);
 
                 // Deserialize input
                 let maybe_input = ::holochain_wasm_utils::memory_serialization::try_deserialize_allocation(encoded_allocation_of_input);
@@ -130,10 +117,7 @@ macro_rules! validations {
                 // Execute inner function
                 let output_result = execute(input);
 
-                // Serialize output in WASM memory
-                unsafe {
-                    return ::holochain_wasm_utils::memory_serialization::serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), output_result) as u32;
-                }
+                ::hdk::serialize_wasm_output(output_result)
             }
         )+
     );
