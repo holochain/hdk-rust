@@ -110,5 +110,5 @@ fn can_invalidate_invalid_commit() {
     );
     println!("\t result = {:?}", result);
     assert!(result.is_ok(), "\t result = {:?}", result);
-    assert_eq!("{\"Err\":\"Call to `hc_commit_entry()` failed: \\\"FAIL content is not allowed\\\"\"}", result.unwrap());
+    assert_eq!("{\"error\":\"Call to `hc_commit_entry()` failed: \\\"FAIL content is not allowed\\\"\"}", result.unwrap());
 }
