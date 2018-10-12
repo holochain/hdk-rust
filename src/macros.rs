@@ -119,11 +119,13 @@ macro_rules! validations {
                     let InputStruct { $entry, $ctx } = params;
                     $main_block
                 }
-                
-                // Execute inner function
-                let output_result = execute(input);
 
-                ::hdk::serialize_wasm_output(output_result)
+                // Execute inner function
+                let validation_result = execute(input);
+                match validation_result {
+                    Ok(()) => 0,
+                    Err(fail_string) => ::hdk::serialize_wasm_output(fail_string),
+                }
             }
         )+
     );

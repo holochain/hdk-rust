@@ -39,7 +39,7 @@ pub fn serialize_wasm_output<T: serde::Serialize>(output: T) -> u32
 {
     // Serialize output in WASM memory
     unsafe {
-        return serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), output) as u32;
+        return serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), output) as u32
     }
 }
 
@@ -85,6 +85,7 @@ const VERSION: u16 = 1;
 const VERSION_STR: &'static str = "1";
 
 // HC.HashNotFound
+#[derive(Debug)]
 pub enum RibosomeError {
     RibosomeFailed(String),
     FunctionNotImplemented,
@@ -257,12 +258,12 @@ pub fn commit_entry(
     #[derive(Serialize, Default)]
     struct CommitInputStruct {
         entry_type_name: String,
-        entry_content: serde_json::Value,
+        entry_content: String,
     }
 
     #[derive(Deserialize, Serialize, Default)]
     struct CommitOutputStruct {
-        hash: String,
+        address: String,
     }
 
     let mut mem_stack: SinglePageStack;
@@ -273,7 +274,7 @@ pub fn commit_entry(
     // Put args in struct and serialize into memory
     let input = CommitInputStruct {
         entry_type_name: entry_type_name.to_string(),
-        entry_content: entry_content,
+        entry_content: entry_content.to_string(),
     };
     let maybe_allocation_of_input = serialize(&mut mem_stack, input);
     if let Err(err_code) = maybe_allocation_of_input {
@@ -299,7 +300,7 @@ pub fn commit_entry(
         .expect("deallocate failed");
 
     // Return hash
-    Ok(output.hash.to_string())
+    Ok(output.address.to_string())
 }
 
 /// FIXME DOC
