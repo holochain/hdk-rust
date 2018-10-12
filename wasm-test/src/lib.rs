@@ -99,7 +99,8 @@ zome_functions! {
     check_get_entry: |entry_hash: String| {
         let res = hdk::get_entry(entry_hash);
         match res {
-            Ok(entry_str) => json!({"entry": entry_str.to_string() }),
+            Ok(Some(entry)) => json!(entry),
+            Ok(None) => json!({"got back no entry":true}),
             Err(RibosomeError::RibosomeFailed(err_str)) => json!({"get entry Err":err_str}),
             Err(_) => unreachable!(),
         }

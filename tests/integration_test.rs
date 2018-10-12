@@ -108,7 +108,6 @@ fn can_get_entry() {
         r#"{ "entry_type_name": "testEntryType", "entry_content": "some content" }"#,
     );
     assert!(result.is_ok(), "\t result = {:?}", result);
-    println!("COMMITRESULT: {:?}", result.unwrap());
 
     let result = hc.call(
         "test_zome",
@@ -118,5 +117,16 @@ fn can_get_entry() {
     );
     println!("\t can_get_entry result = {:?}", result);
     assert!(result.is_ok(), "\t result = {:?}", result);
-    assert_eq!(result.unwrap(),r#"some content"#);
+    assert_eq!(result.unwrap(),"\"\\\"some content\\\"\"");
+
+    // test the case with a bad hash
+    let result = hc.call(
+        "test_zome",
+        "test_cap",
+        "check_get_entry",
+        r#"{"entry_hash":"QmbC71ggSaEa1oVPTeNN7ZoB93DYhxowhKSF6Yia2Vjxxx"}"#,
+    );
+    println!("\t can_get_entry result = {:?}", result);
+    assert!(result.is_ok(), "\t result = {:?}", result);
+    assert_eq!(result.unwrap(),"{\"got back no entry\":true}");
 }

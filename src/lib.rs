@@ -22,6 +22,9 @@ use holochain_wasm_utils::{memory_serialization::*, memory_allocation::*};
 
 pub type HashString = String;
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Entry(String);
+
 //--------------------------------------------------------------------------------------------------
 // APP GLOBAL VARIABLES
 //--------------------------------------------------------------------------------------------------
@@ -308,7 +311,7 @@ pub fn remove_entry<S: Into<String>>(
 }
 
 /// implements access to low-level WASM hc_get_entry
-pub fn get_entry(entry_hash: HashString) -> Result<serde_json::Value, RibosomeError> {
+pub fn get_entry(entry_hash: HashString) -> Result<  Option<Entry>, RibosomeError> {
     #[derive(Serialize, Default)]
     struct GetInputStruct {
         address: String,
@@ -329,7 +332,7 @@ pub fn get_entry(entry_hash: HashString) -> Result<serde_json::Value, RibosomeEr
     }
     let allocation_of_input = maybe_allocation_of_input.unwrap();
 
-    // Call WASMI-able commit
+    // Call WASMI-able get_entry
     let encoded_allocation_of_result: u32;
     unsafe {
         encoded_allocation_of_result = hc_get_entry(allocation_of_input.encode() as u32);
@@ -339,7 +342,7 @@ pub fn get_entry(entry_hash: HashString) -> Result<serde_json::Value, RibosomeEr
     if let Err(err_str) = result {
         return Err(RibosomeError::RibosomeFailed(err_str));
     }
-    let output: serde_json::Value = result.unwrap();
+    let output = result.unwrap();
 
     // Free result & input allocations and all allocations made inside commit()
     mem_stack
