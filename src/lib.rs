@@ -18,7 +18,7 @@ pub mod macros;
 
 use self::RibosomeError::*;
 use globals::*;
-use holochain_wasm_utils::memory_serialization::*;
+use holochain_wasm_utils::{memory_allocation::*, memory_serialization::*};
 use std::{error::Error, fmt};
 
 pub type HashString = String;
@@ -267,7 +267,6 @@ pub fn commit_entry(
     entry_type_name: &str,
     entry_content: serde_json::Value,
 ) -> Result<HashString, RibosomeError> {
-    /* TODO: FIXME
     #[derive(Serialize, Default)]
     struct CommitInputStruct {
         entry_type_name: String,
@@ -314,9 +313,6 @@ pub fn commit_entry(
 
     // Return hash
     Ok(output.hash.to_string())
-    
-    */
-    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
@@ -400,9 +396,9 @@ pub fn close_bundle(_action: BundleOnClose) {
 mod test {
     use super::*;
 
-    //
-    // Ribosome error handling unit tests
-    //
+    /**
+     * Ribosome error handling unit tests
+     */
 
     #[test]
     /// test that we can convert an error to a string
@@ -418,18 +414,17 @@ mod test {
         assert_eq!("Function not implemented", err.description())
     }
 
-    //
-    // property() unit tests
-    //
+    /**
+     * property() unit tests
+     */
 
     #[test]
     /// test that property() returns HashNotFound error for null key
     fn test_property_invalid() {
-        // check whether function implemented
-        let result = property("");
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("property() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // test empty property key parameter
         assert_eq!(r#"HashNotFound"#, property("").err().unwrap().to_string());
@@ -444,28 +439,26 @@ mod test {
     #[test]
     /// test that property() returns value for known key
     fn test_property_valid() {
-        // check whether function implemented
-        let result = property("");
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("property() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // test known property key parameter
         assert_eq!(true, property("Name").is_ok())
     }
 
-    //
-    // make_hash() unit tests
-    //
+    /**
+     * make_hash() unit tests
+     */
 
     #[test]
     /// test that make_hash() returns value for array entry data
     fn test_make_hash_invalid() {
-        // check whether function implemented
-        let result = make_hash("", json!(""));
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("make_hash() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // test empty entry type parameter
         // TODO: is this the right error?
@@ -476,11 +469,10 @@ mod test {
     #[test]
     /// test that make_hash() returns value for valid entry data
     fn test_make_hash_valid() {
-        // check whether function implemented
-        let result = make_hash("", json!(""));
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("make_hash() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // test non-empty entry type parameter w/ various valid forms of entry data
         assert_eq!(true, make_hash("test", json!("")).is_ok());
@@ -498,64 +490,65 @@ mod test {
         )
     }
 
-    //
-    // debug() unit tests
-    //
+    /**
+     * debug() unit tests
+     */
 
     #[test]
-    /// test that debug() returns error for invalid arguments
+    /// test that debug() returns ok for valid arguments
     fn test_debug() {
-        // TODO: fix once function properly spec'd w/ Result returned
-        assert!(false);
+        /*** FIXME when implemented.
+         */
+        println!("debug() not sufficiently implemented for unit testing.");
+        return assert!(false);
+
+        assert_eq!(true, debug("testing debug").is_ok());
     }
 
-    //
-    // call() unit tests
-    //
+    /**
+     * call() unit tests
+     */
 
     #[test]
     /// test that call() returns error for invalid arguments
     fn test_call_invalid() {
-        // check whether function implemented
-        let result = call("", "", json!(""));
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("call() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // test empty zome name parameter
-        // TODO: FIXME with proper error value
+        // FIXME with proper error value
         assert_eq!(true, call("", "test", json!("test")).is_err());
 
         // test empty function name parameter
-        // TODO: FIXME with proper error value
+        // FIXME with proper error value
         assert_eq!(true, call("test", "", json!("test")).is_err());
     }
 
     #[test]
     /// test that call() returns value for valid arguments
     fn test_call_valid() {
-        // check whether function implemented
-        let result = call("", "", json!(""));
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("call() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // test valid zome, function, and argument(s) parameters
         assert_eq!(true, call("test", "test", json!("")).is_ok());
     }
 
-    //
-    // sign() unit tests
-    //
+    /**
+     * sign() unit tests
+     */
 
     #[test]
     /// test that sign() returns value for valid arguments
     fn test_sign() {
-        // check whether function implemented
-        let result = sign("");
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("sign() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // test sign empty data parameter
         assert_eq!(true, sign("").is_ok());
@@ -564,117 +557,135 @@ mod test {
         assert_eq!(true, sign("test data").is_ok());
     }
 
-    //
-    // verify_signature() unit tests
-    //
+    /**
+     * verify_signature() unit tests
+     */
 
     #[test]
     /// test that verify_signature() returns error for invalid arguments
     fn test_verify_signature_invalid() {
-        // check whether function implemented
-        let result = verify_signature("", "", "");
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
-        // TODO: raise issue re move vs borrow ownership of data to be signed
+        /*** FIXME when implemented.
+         */
+        println!("verify_signature() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // test invalid (i.e., empty string) parameters
-        // TODO: FIXME with proper error value
+        // FIXME with proper error value
         assert_eq!(true, verify_signature("", "", "").is_err());
 
-        // sign test data
         let data = "test data".to_string();
-        let pub_key = get_entry(APP_AGENT_KEY_HASH.to_string()).unwrap();
-        let pub_key = pub_key["public_key"].to_string();
-        let signed = sign(data.clone()).unwrap();
+        // get agent's own public key for verification
+        let key_entry = get_entry(APP_AGENT_KEY_HASH.clone());
+        if key_entry.is_err() {
+            assert!(false);
+        } else {
+            let pub_key = key_entry.unwrap()["public_key"].to_string();
 
-        // test invalid public key parameter
-        // TODO: FIXME with proper error value
-        assert_eq!(
-            true,
-            verify_signature(signed.clone(), data.clone(), "bad key".to_string()).is_err()
-        );
+            // sign test data
+            let signed = sign(data.clone());
+            if signed.is_err() {
+                assert!(false);
+            } else {
+                let signature = signed.unwrap();
 
-        // test invalid signature parameter
-        // TODO: FIXME with proper error value
-        assert_eq!(
-            true,
-            verify_signature("bad signature".to_string(), data, pub_key).is_err()
-        );
+                // test invalid public key parameter
+                // FIXME with proper error value
+                assert_eq!(
+                    true,
+                    verify_signature(signature.clone(), data.clone(), "bad key".to_string())
+                        .is_err()
+                );
+                // test invalid signature parameter
+                // FIXME with proper error value
+                assert_eq!(
+                    true,
+                    verify_signature("bad signature".to_string(), data, pub_key).is_err()
+                );
+            }
+        }
     }
 
     #[test]
     /// test that verify_signature() returns value for valid arguments
     fn test_verify_signature_valid() {
-        // check whether function implemented
-        let result = verify_signature("", "", "");
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("verify_signature() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
-        // sign test data
         let data = "test data".to_string();
-        let pub_key = get_entry(APP_AGENT_KEY_HASH.to_string()).unwrap();
-        let pub_key = pub_key["public_key"].to_string();
-        let signed = sign(data.clone()).unwrap();
+        // get agent's own public key for verification
+        let key_entry = get_entry(APP_AGENT_KEY_HASH.clone());
+        if key_entry.is_err() {
+            assert!(false);
+        } else {
+            let pub_key = key_entry.unwrap()["public_key"].to_string();
 
-        // get agent public key to verify self-signed data
-        assert_eq!(true, verify_signature(signed, data, pub_key).is_ok());
+            // sign test data
+            let signed = sign(data.clone());
+            if signed.is_err() {
+                assert!(false);
+            } else {
+                let signature = signed.unwrap();
+
+                // get agent public key to verify self-signed data
+                assert_eq!(true, verify_signature(signature, data, pub_key).is_ok());
+            }
+        }
     }
 
-    //
-    // commit_entry() unit tests
-    //
+    /**
+     * commit_entry() unit tests
+     */
 
     #[test]
     /// test that commit_entry() returns error for invalid arguments
     fn test_commit_entry_invalid() {
-        // check whether function implemented
-        let result = commit_entry("", json!(""));
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("commit_entry() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // invalid (i.e., empty string) arguments
-        // TODO: FIXME with proper error value
+        // FIXME with proper error value
         assert_eq!(true, commit_entry("", json!("")).is_err());
     }
 
     #[test]
     /// test that commit_entry() returns ok for valid arguments
     fn test_commit_entry_valid() {
-        // check whether function implemented
-        let result = commit_entry("", json!(""));
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("commit_entry() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // invalid (i.e., empty string) arguments
         assert_eq!(true, commit_entry("test", json!("test data")).is_ok());
+
+        // TODO: verify committed entry content
     }
 
-    //
-    // update_entry() unit tests
-    //
+    /**
+     * update_entry() unit tests
+     */
 
     #[test]
     /// test that update_entry() returns error for invalid arguments
     fn test_update_entry_invalid() {
-        // check whether function implemented
-        let result = update_entry("", json!(""), "".to_string());
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("update_entry() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // test invalid invalid entry hash
-        // TODO: FIXME with proper error value
+        // FIXME with proper error value
         assert_eq!(
             true,
             update_entry("test", json!(""), "".to_string()).is_err()
         );
 
         // test invalid entry type
-        // TODO: FIXME with proper error value
+        // FIXME with proper error value
         let test_entry = commit_entry("test", json!("test_data")).unwrap();
         assert_eq!(true, update_entry("", json!(""), test_entry).is_err());
     }
@@ -682,11 +693,10 @@ mod test {
     #[test]
     /// test that update_entry() returns ok for valid arguments
     fn test_update_entry_valid() {
-        // check whether function implemented
-        let result = update_entry("", json!(""), "".to_string());
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("update_entry() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // test update on test entry
         let test_entry = commit_entry("test", json!("test data")).unwrap();
@@ -696,18 +706,17 @@ mod test {
         );
     }
 
-    //
-    // update_agent() unit tests
-    //
+    /**
+     * update_agent() unit tests
+     */
 
     #[test]
     /// test that update_agent() returns ok
     fn test_update_agent() {
-        // check whether function implemented
-        let result = update_agent();
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("update_agent() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // test update agent
         assert_eq!(true, update_agent().is_ok());
@@ -720,14 +729,13 @@ mod test {
     #[test]
     /// test that remove_entry() returns error for invalid arguments
     fn test_remove_entry_invalid() {
-        // check whether function implemented
-        let result = remove_entry("".to_string(), "");
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("remove_entry() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // test invalid (i.e., empty string) parameters
-        // TODO: FIXME with proper error value
+        // FIXME with proper error value
         assert_eq!(
             true,
             remove_entry("".to_string(), "remove_entry_invalid() test").is_err()
@@ -737,11 +745,10 @@ mod test {
     #[test]
     /// test that remove_entry() returns ok for valid arguments
     fn test_remove_entry_valid() {
-        // check whether function implemented
-        let result = remove_entry("".to_string(), "");
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("remove_entry() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // commit test entry
         let test_entry = commit_entry("test", json!("test data")).unwrap();
@@ -753,18 +760,17 @@ mod test {
         );
     }
 
-    //
-    // get_entry() unit tests
-    //
+    /**
+     * get_entry() unit tests
+     */
 
     #[test]
     /// test that get_entry() returns ok for valid arguments
     fn test_get_entry_valid() {
-        // check whether function implemented
-        let result = get_entry("".to_string());
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("get_entry() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // commit test entry
         let test_entry = commit_entry("test", json!("test data")).unwrap();
@@ -777,14 +783,19 @@ mod test {
     #[test]
     /// test that get_entry() returns error for valid arguments
     fn test_get_entry_invalid() {
+        /*** FIXME when implemented.
+         */
+        println!("get_entry() not sufficiently implemented for unit testing.");
+        return assert!(false);
+
         // check whether function implemented
         let result = get_entry("".to_string());
         if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
+            return assert!(false);
         }
 
         // test null entry hash parameter
-        // TODO: FIXME with proper error value
+        // FIXME with proper error value
         assert_eq!(true, get_entry("".to_string()).is_err());
 
         // commit and then remove test entry
@@ -796,15 +807,18 @@ mod test {
         assert_eq!(Some(RibosomeError::HashNotFound), result.err());
     }
 
-    //
-    // link_entries() unit tests
-    //
+    /**
+     * link_entries() unit tests
+     */
 
     #[test]
     /// test that link_entries() returns ok for valid arguments
     fn test_link_entries() {
-        // TODO: fix once function properly spec'd w/ Result returned
-        assert!(false);
+        /*** FIXME when implemented.
+         * link_entries() should return Result
+         */
+        println!("link_entries() not sufficiently implemented for unit testing.");
+        return assert!(false);
     }
 
     //
@@ -814,11 +828,10 @@ mod test {
     #[test]
     /// test that get_links() returns error for invalid arguments
     fn test_get_links_invalid() {
-        // check whether function implemented
-        let result = get_links("".to_string(), "");
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         */
+        println!("get_links() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // commit & link test entries
         let test_entry_1 = commit_entry("test1", json!("test data 1")).unwrap();
@@ -826,22 +839,22 @@ mod test {
         link_entries(test_entry_1.clone(), test_entry_2.clone(), "test link");
 
         // test null entry hash parameter
-        // TODO: FIXME with proper error value
+        // FIXME with proper error value
         assert_eq!(true, get_links("".to_string(), "test link").is_err());
 
         // test null link tag parameter
-        // TODO: FIXME with proper error value
+        // FIXME with proper error value
         assert_eq!(true, get_links(test_entry_1, "").is_err());
     }
 
     #[test]
     /// test that get_links() returns ok for valid arguments
     fn test_get_links_valid() {
-        // check whether function implemented
-        let result = get_links("".to_string(), "");
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
+        /*** FIXME when implemented.
+         * TODO: verify link end-point entries
+         */
+        println!("get_links() not sufficiently implemented for unit testing.");
+        return assert!(false);
 
         // commit & link test entries
         let test_entry_1 = commit_entry("test1", json!("test data 1")).unwrap();
@@ -849,53 +862,69 @@ mod test {
         link_entries(test_entry_1.clone(), test_entry_2.clone(), "test link");
 
         // test get on test link
-        // TODO: verify link end-point entries
         assert_eq!(true, get_links(test_entry_1, "test link").is_ok());
         assert_eq!(true, get_links(test_entry_2, "test link").is_ok());
     }
 
-    //
-    // query() unit tests
-    //
+    /**
+     * query() unit tests
+     */
 
     #[test]
-    /// test query() returns Result
-    fn test_query() {
-        // check whether function implemented
-        let result = query();
-        if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
-        }
-
-        // TODO: fix once function properly spec'd w/ options parameter
-        assert!(false);
+    /// test query() returns error for invalid arguments
+    fn test_query_invalid() {
+        /*** FIXME when implemented.
+         * TODO: Define test cases once function parametes properly spec'd
+         */
+        println!("query() not sufficiently implemented for unit testing.");
+        return assert!(false);
     }
 
-    //
-    // send() unit tests
-    //
+    #[test]
+    /// test query() returns error for invalid arguments
+    fn test_query_valid() {
+        /*** FIXME when implemented.
+         * TODO: Define test cases once function parametes properly spec'd
+         */
+        println!("query() not sufficiently implemented for unit testing.");
+        return assert!(false);
+    }
+
+    /**
+     * send() unit tests
+     */
 
     #[test]
     /// test send() returns error for invalid parameters
     fn test_send_invalid() {
+        /*** FIXME when implemented.
+         */
+        println!("send() not sufficiently implemented for unit testing.");
+        return assert!(false);
+
         // check whether function implemented
         let result = send("".to_string(), json!(""));
         if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
+            return assert!(false);
         }
 
         // test null entry hash parameter
-        // TODO: FIXME with proper error value
+        // FIXME with proper error value
         assert_eq!(true, send("".to_string(), json!("test message")).is_err());
     }
 
     #[test]
     /// test send() returns ok for valid parameters
     fn test_send_valid() {
+        /*** FIXME when implemented.
+         */
+        println!("send() not sufficiently implemented for unit testing.");
+        return assert!(false);
+
         // check whether function implemented
         let result = send("".to_string(), json!(""));
         if let Some(RibosomeError::FunctionNotImplemented) = result.err() {
-            assert!(false);
+            return assert!(false);
         }
 
         // test send message to self (i.e., own agent)
@@ -905,26 +934,31 @@ mod test {
         );
     }
 
-    //
-    // start_bundle() unit tests
-    //
+    /**
+     * start_bundle() unit tests
+     */
 
     #[test]
     /// test start_bundle() returns error for invalid parameters
     fn test_start_bundle() {
-        // TODO: fix once function properly spec'd w/ Result returned
-        assert!(false);
+        /*** FIXME when implemented.
+         * TODO: link_entries() should return Result?
+         */
+        println!("send() not sufficiently implemented for unit testing.");
+        return assert!(false);
     }
 
-    //
-    // close_bundle() unit tests
-    //
+    /**
+     * close_bundle() unit tests
+     */
 
     #[test]
     /// test close_bundle() returns error for invalid parameters
     fn test_close_bundle() {
-        // TODO: fix once function properly spec'd w/ Result returned
-        assert!(false);
+        /*** FIXME when implemented.
+         * TODO: link_entries() should return Result?
+         */
+        println!("send() not sufficiently implemented for unit testing.");
+        return assert!(false);
     }
-
 }
