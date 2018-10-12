@@ -32,7 +32,7 @@ pub extern "C" fn check_global(encoded_allocation_of_input: u32) -> u32 {
 
 #[derive(Deserialize, Serialize, Default)]
 struct CommitOutputStruct {
-    hash: String,
+    address: String,
 }
 
 
@@ -51,19 +51,18 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
 
     // Deserialize and check for an encoded error
     let result = try_deserialize_allocation(encoded_allocation_of_input as u32);
-    if let Err(_) = result {
+    if let Err(e) = result {
+        hdk::debug(&format!("ERROR: {:?}", e));
         return RibosomeErrorCode::ArgumentDeserializationFailed as u32;
     }
 
     let input: CommitInputStruct = result.unwrap();
-    let res = hdk::commit_entry(&input.entry_type_name, json!({
-        "entry_content": &input.entry_content
-    }));
+    let entry_content = serde_json::from_str::<serde_json::Value>(&input.entry_content);
+    let entry_content = entry_content.unwrap();
+    let res = hdk::commit_entry(&input.entry_type_name, entry_content);
 
-   let res_obj = match res {
-        Ok(hash_str) => CommitOutputStruct {
-            hash: hash_str
-        },
+    let res_obj = match res {
+        Ok(hash_str) => CommitOutputStruct {address: hash_str},
         Err(RibosomeError::RibosomeFailed(err_str)) => {
             unsafe {
                 return serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), err_str) as u32;
@@ -80,12 +79,11 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
 //
 zome_functions! {
     check_commit_entry_macro: |entry_type_name: String, entry_content: String| {
-        let res = hdk::commit_entry(&entry_type_name, json!(
-            entry_content
-        ));
+        let entry_content = serde_json::from_str::<serde_json::Value>(&entry_content);
+        let res = hdk::commit_entry(&entry_type_name, entry_content.unwrap());
         match res {
-            Ok(hash_str) => Ok(CommitOutputStruct { hash: hash_str }),
-            Err(RibosomeError::RibosomeFailed(err_str)) => Err(err_str),
+            Ok(hash_str) => json!({ "address": hash_str }),
+            Err(RibosomeError::RibosomeFailed(err_str)) => json!({ "error": err_str}),
             Err(_) => unreachable!(),
         }
     }
