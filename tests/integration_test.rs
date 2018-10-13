@@ -118,7 +118,7 @@ fn can_get_entry() {
     );
     println!("\t can_get_entry result = {:?}", result);
     assert!(result.is_ok(), "\t result = {:?}", result);
-    assert_eq!(result.unwrap(),"\"\\\"some content\\\"\"");
+    assert_eq!(result.unwrap(),"{\"stuff\":\"non fail\"}");
 
     // test the case with a bad hash
     let result = hc.call(
