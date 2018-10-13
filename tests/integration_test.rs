@@ -27,6 +27,7 @@ fn start_holochain_instance() -> (Holochain, Arc<Mutex<TestLogger>>) {
         "check_global",
         "check_commit_entry",
         "check_commit_entry_macro",
+        "check_get_entry",
         "send_tweet",
     ]);
     let dna = create_test_dna_with_cap("test_zome", "test_cap", &capabability, &wasm);
@@ -60,7 +61,6 @@ fn can_commit_entry() {
     println!("\t result = {:?}", result);
     assert!(result.is_ok(), "result = {:?}", result);
     assert_eq!(result.unwrap(),r#"{"address":"QmYURqXPNfifiBhFcoQ66SazMwnjDsRNCM1RhJte3jNSBT"}"#);
-
 }
 
 #[test]
@@ -76,7 +76,6 @@ fn can_commit_entry_macro() {
     println!("\t result = {:?}", result);
     assert!(result.is_ok(), "\t result = {:?}", result);
     assert_eq!(result.unwrap(),r#"{"address":"QmYURqXPNfifiBhFcoQ66SazMwnjDsRNCM1RhJte3jNSBT"}"#);
-
 }
 
 #[test]
@@ -96,6 +95,41 @@ fn can_round_trip() {
     let test_logger = test_logger.lock().unwrap();
 
     println!("{:?}", *test_logger);
+}
+
+#[test]
+fn can_get_entry() {
+    let (mut hc, _) = start_holochain_instance();
+    // Call the exposed wasm function that calls the Commit API function
+    let result = hc.call(
+        "test_zome",
+        "test_cap",
+        "check_commit_entry_macro",
+        r#"{ "entry_type_name": "testEntryType", "entry_content": "{\"stuff\": \"non fail\"}" }"#,
+    );
+    assert!(result.is_ok(), "\t result = {:?}", result);
+    assert_eq!(result.unwrap(),"{\"address\":\"QmYURqXPNfifiBhFcoQ66SazMwnjDsRNCM1RhJte3jNSBT\"}");
+
+    let result = hc.call(
+        "test_zome",
+        "test_cap",
+        "check_get_entry",
+        r#"{"entry_hash":"QmYURqXPNfifiBhFcoQ66SazMwnjDsRNCM1RhJte3jNSBT"}"#,
+    );
+    println!("\t can_get_entry result = {:?}", result);
+    assert!(result.is_ok(), "\t result = {:?}", result);
+    assert_eq!(result.unwrap(),"{\"stuff\":\"non fail\"}");
+
+    // test the case with a bad hash
+    let result = hc.call(
+        "test_zome",
+        "test_cap",
+        "check_get_entry",
+        r#"{"entry_hash":"QmbC71ggSaEa1oVPTeNN7ZoB93DYhxowhKSF6Yia2Vjxxx"}"#,
+    );
+    println!("\t can_get_entry result = {:?}", result);
+    assert!(result.is_ok(), "\t result = {:?}", result);
+    assert_eq!(result.unwrap(),"{\"got back no entry\":true}");
 }
 
 #[test]
