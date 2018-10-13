@@ -26,9 +26,6 @@ pub use holochain_wasm_utils::validation::*;
 
 pub type HashString = String;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Entry(String);
-
 pub fn init_memory_stack(encoded_allocation_of_input: u32) {
     // Actual program
     // Init memory stack
@@ -333,10 +330,22 @@ pub fn remove_entry<S: Into<String>>(
 }
 
 /// implements access to low-level WASM hc_get_entry
-pub fn get_entry(entry_hash: HashString) -> Result<  Option<Entry>, RibosomeError> {
+pub fn get_entry(entry_hash: HashString) -> Result<Option<String>, RibosomeError> {
     #[derive(Serialize, Default)]
     struct GetInputStruct {
         address: String,
+    }
+
+    #[derive(Deserialize, Debug, Serialize)]
+    enum GetResultStatus {
+        Found,
+        NotFound,
+    }
+
+    #[derive(Deserialize, Debug, Serialize)]
+    struct GetAppEntryResult {
+        status: GetResultStatus,
+        entry: String,
     }
 
     let mut mem_stack: SinglePageStack;
@@ -364,15 +373,17 @@ pub fn get_entry(entry_hash: HashString) -> Result<  Option<Entry>, RibosomeErro
     if let Err(err_str) = result {
         return Err(RibosomeError::RibosomeFailed(err_str));
     }
-    let output = result.unwrap();
+    let result : GetAppEntryResult = result.unwrap();
 
     // Free result & input allocations and all allocations made inside commit()
     mem_stack
         .deallocate(allocation_of_input)
         .expect("deallocate failed");
 
-    // Return entry
-    Ok(output)
+    match result.status {
+        GetResultStatus::Found => Ok(Some(result.entry)),
+        GetResultStatus::NotFound => Ok(None),
+    }
 }
 
 /// FIXME DOC
