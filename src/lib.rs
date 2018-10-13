@@ -204,7 +204,8 @@ pub fn make_hash<S: Into<String>>(
     _entry_data: serde_json::Value,
 ) -> Result<HashString, RibosomeError> {
     // FIXME
-    Err(RibosomeError::FunctionNotImplemented)}
+    Err(RibosomeError::FunctionNotImplemented)
+}
 
 /// FIXME DOC
 pub fn debug(msg: &str) -> Result<(), RibosomeError> {
