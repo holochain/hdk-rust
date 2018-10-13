@@ -74,12 +74,6 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
     }
 }
 
-
-#[derive(Deserialize, Serialize, Default)]
-struct GetOutputStruct {
-    entry: String,
-}
-
 //
 zome_functions! {
     check_commit_entry_macro: |entry_type_name: String, entry_content: String| {
