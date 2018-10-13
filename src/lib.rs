@@ -18,12 +18,34 @@ pub mod macros;
 
 use self::RibosomeError::*;
 use globals::*;
-use holochain_wasm_utils::{memory_serialization::*, memory_allocation::*};
+use holochain_wasm_utils::{
+    memory_serialization::*, memory_allocation::*,
+    validation::*
+};
+pub use holochain_wasm_utils::validation::*;
 
 pub type HashString = String;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Entry(String);
+
+pub fn init_memory_stack(encoded_allocation_of_input: u32) {
+    // Actual program
+    // Init memory stack
+    unsafe {
+        G_MEM_STACK =
+            Some(SinglePageStack::from_encoded(encoded_allocation_of_input));
+    }
+}
+
+pub fn serialize_wasm_output<T: serde::Serialize>(output: T) -> u32
+{
+    // Serialize output in WASM memory
+    unsafe {
+        return serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), output) as u32
+    }
+}
+
 
 //--------------------------------------------------------------------------------------------------
 // APP GLOBAL VARIABLES
@@ -37,7 +59,7 @@ lazy_static! {
   /// Nodes must run the same DNA to be on the same DHT.
   pub static ref APP_DNA_HASH: &'static HashString = &APP_GLOBALS.app_dna_hash;
 
-  /// The identity string used to initialize this Holochain with `hcadmin init`.
+  /// The identity string used when the chain was first initialized.
   /// If you used JSON to embed multiple properties (such as FirstName, LastName, Email, etc),
   /// they can be retrieved here as App.Agent.FirstName, etc. (FIXME)
   pub static ref APP_AGENT_ID_STR: &'static str = &APP_GLOBALS.app_agent_id_str;

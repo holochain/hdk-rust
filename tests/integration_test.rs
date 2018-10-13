@@ -56,11 +56,11 @@ fn can_commit_entry() {
         "test_zome",
         "test_cap",
         "check_commit_entry",
-        r#"{ "entry_type_name": "testEntryType", "entry_content": "some content" }"#,
+        r#"{ "entry_type_name": "testEntryType", "entry_content": "{\"stuff\": \"non fail\"}" }"#,
     );
     println!("\t result = {:?}", result);
     assert!(result.is_ok(), "result = {:?}", result);
-    assert_eq!(result.unwrap(),r#"{"address":"QmbC71ggSaEa1oVPTeNN7ZoB93DYhxowhKSF6Yia2VjMy5"}"#);
+    assert_eq!(result.unwrap(),r#"{"address":"QmYURqXPNfifiBhFcoQ66SazMwnjDsRNCM1RhJte3jNSBT"}"#);
 }
 
 #[test]
@@ -71,11 +71,11 @@ fn can_commit_entry_macro() {
         "test_zome",
         "test_cap",
         "check_commit_entry_macro",
-        r#"{ "entry_type_name": "testEntryType", "entry_content": "some content" }"#,
+        r#"{ "entry_type_name": "testEntryType", "entry_content": "{\"stuff\": \"non fail\"}" }"#,
     );
     println!("\t result = {:?}", result);
     assert!(result.is_ok(), "\t result = {:?}", result);
-    assert_eq!(result.unwrap(),r#"{"address":"QmbC71ggSaEa1oVPTeNN7ZoB93DYhxowhKSF6Yia2VjMy5"}"#);
+    assert_eq!(result.unwrap(),r#"{"address":"QmYURqXPNfifiBhFcoQ66SazMwnjDsRNCM1RhJte3jNSBT"}"#);
 }
 
 #[test]
@@ -129,4 +129,19 @@ fn can_get_entry() {
     println!("\t can_get_entry result = {:?}", result);
     assert!(result.is_ok(), "\t result = {:?}", result);
     assert_eq!(result.unwrap(),"{\"got back no entry\":true}");
+}
+
+#[test]
+fn can_invalidate_invalid_commit() {
+    let (mut hc, _) = start_holochain_instance();
+    // Call the exposed wasm function that calls the Commit API function
+    let result = hc.call(
+        "test_zome",
+        "test_cap",
+        "check_commit_entry_macro",
+        r#"{ "entry_type_name": "testEntryType", "entry_content": "{\"stuff\": \"FAIL\"}" }"#,
+    );
+    println!("\t result = {:?}", result);
+    assert!(result.is_ok(), "\t result = {:?}", result);
+    assert_eq!("{\"error\":\"Call to `hc_commit_entry()` failed: \\\"FAIL content is not allowed\\\"\"}", result.unwrap());
 }
