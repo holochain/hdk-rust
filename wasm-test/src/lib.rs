@@ -95,9 +95,16 @@ zome_functions! {
     check_get_entry: |entry_hash: String| {
         let res = hdk::get_entry(entry_hash);
         match res {
-            Ok(Some(entry)) => json!(entry),
-            Ok(None) => json!({"got back no entry":true}),
-            Err(RibosomeError::RibosomeFailed(err_str)) => json!({"get entry Err":err_str}),
+            Ok(Some(entry)) => {
+                hdk::debug(&entry);
+                let maybe_entry_value : Result<serde_json::Value, _> = serde_json::from_str(&entry);
+                match maybe_entry_value {
+                    Ok(entry_value) => entry_value,
+                    Err(err) => json!({"error trying deserialize entry": err.to_string()}),
+                }
+            },
+            Ok(None) => json!({"got back no entry": true}),
+            Err(RibosomeError::RibosomeFailed(err_str)) => json!({"get entry Err": err_str}),
             Err(_) => unreachable!(),
         }
     }
