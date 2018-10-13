@@ -108,12 +108,13 @@ fn can_get_entry() {
         r#"{ "entry_type_name": "testEntryType", "entry_content": "{\"stuff\": \"non fail\"}" }"#,
     );
     assert!(result.is_ok(), "\t result = {:?}", result);
+    assert_eq!(result.unwrap(),"{\"address\":\"QmYURqXPNfifiBhFcoQ66SazMwnjDsRNCM1RhJte3jNSBT\"}");
 
     let result = hc.call(
         "test_zome",
         "test_cap",
         "check_get_entry",
-        r#"{"entry_hash":"QmbC71ggSaEa1oVPTeNN7ZoB93DYhxowhKSF6Yia2VjMy5"}"#,
+        r#"{"entry_hash":"QmYURqXPNfifiBhFcoQ66SazMwnjDsRNCM1RhJte3jNSBT"}"#,
     );
     println!("\t can_get_entry result = {:?}", result);
     assert!(result.is_ok(), "\t result = {:?}", result);
