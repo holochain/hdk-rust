@@ -388,9 +388,13 @@ pub fn get_entry(entry_hash: HashString) -> Result<Option<String>, RibosomeError
 }
 
 /// FIXME DOC
-pub fn link_entries<S: Into<String>>(_base: HashString, _target: HashString, _tag: S) {
+pub fn link_entries<S: Into<String>>(
+    _base: HashString,
+    _target: HashString,
+    _tag: S
+) -> Result<(), RibosomeError> {
     // FIXME
-    // Maybe return error if HashStrings are not valid
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
@@ -399,7 +403,7 @@ pub fn get_links<S: Into<String>>(
     _tag: S,
 ) -> Result<Vec<HashString>, RibosomeError> {
     // FIXME
-    Ok(vec![])
+    Err(RibosomeError::FunctionNotImplemented)
 }
 
 /// FIXME DOC
