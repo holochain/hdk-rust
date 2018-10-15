@@ -22,7 +22,7 @@ pub fn create_test_cap_with_fn_names(fn_names: Vec<&str>) -> Capability {
 fn start_holochain_instance() -> (Holochain, Arc<Mutex<TestLogger>>) {
     // Setup the holochain instance
     let wasm =
-        create_wasm_from_file("wasm-test/target/wasm32-unknown-unknown/debug/test_globals.wasm");
+        create_wasm_from_file("wasm-test/target/wasm32-unknown-unknown/release/test_globals.wasm");
     let capabability = create_test_cap_with_fn_names(vec![
         "check_global",
         "check_commit_entry",
