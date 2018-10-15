@@ -19,10 +19,13 @@ pub mod macros;
 use self::RibosomeError::*;
 use globals::*;
 use holochain_wasm_utils::{
+    api_serialization::{
+        commit::{CommitEntryArgs, CommitOutputStruct},
+        validation::*,
+    },
     memory_serialization::*, memory_allocation::*,
-    validation::*
 };
-pub use holochain_wasm_utils::validation::*;
+pub use holochain_wasm_utils::api_serialization::validation::*;
 
 pub type HashString = String;
 
@@ -90,15 +93,17 @@ pub enum RibosomeError {
     RibosomeFailed(String),
     FunctionNotImplemented,
     HashNotFound,
+    ValidationFailed(String)
 }
 
 impl RibosomeError {
     pub fn to_json(&self) -> serde_json::Value {
         let err_str = match self {
-            RibosomeFailed(error_desc) => error_desc,
-            FunctionNotImplemented => "Function not implemented",
-            HashNotFound => "Hash not found",
-        }.to_string();
+            RibosomeFailed(error_desc) => error_desc.clone(),
+            FunctionNotImplemented => "Function not implemented".to_string(),
+            HashNotFound => "Hash not found".to_string(),
+            ValidationFailed(msg) => format!("Validation failed: {}", msg),
+        };
         json!({ "error": err_str })
     }
 }
@@ -255,26 +260,15 @@ pub fn commit_entry(
     entry_type_name: &str,
     entry_content: serde_json::Value,
 ) -> Result<HashString, RibosomeError> {
-    #[derive(Serialize, Default)]
-    struct CommitInputStruct {
-        entry_type_name: String,
-        entry_content: String,
-    }
-
-    #[derive(Deserialize, Serialize, Default,Debug)]
-    struct CommitOutputStruct {
-        address: String,
-    }
-
     let mut mem_stack: SinglePageStack;
     unsafe {
         mem_stack = G_MEM_STACK.unwrap();
     }
 
     // Put args in struct and serialize into memory
-    let input = CommitInputStruct {
+    let input = CommitEntryArgs {
         entry_type_name: entry_type_name.to_string(),
-        entry_content: entry_content.to_string(),
+        entry_value: entry_content.to_string(),
     };
     let maybe_allocation_of_input = serialize(&mut mem_stack, input);
     if let Err(err_code) = maybe_allocation_of_input {
@@ -300,8 +294,11 @@ pub fn commit_entry(
         .deallocate(allocation_of_input)
         .expect("deallocate failed");
 
-    // Return hash
-    Ok(output.address.to_string())
+    if output.validation_failure.len() > 0 {
+        Err(RibosomeError::ValidationFailed(output.validation_failure))
+    } else {
+        Ok(output.address.to_string())
+    }
 }
 
 /// FIXME DOC

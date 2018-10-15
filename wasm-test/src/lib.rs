@@ -81,6 +81,7 @@ zome_functions! {
         let res = hdk::commit_entry(&entry_type_name, entry_content.unwrap());
         match res {
             Ok(hash_str) => json!({ "address": hash_str }),
+            Err(RibosomeError::ValidationFailed(msg)) => json!({ "validation failed": msg}),
             Err(RibosomeError::RibosomeFailed(err_str)) => json!({ "error": err_str}),
             Err(_) => unreachable!(),
         }
