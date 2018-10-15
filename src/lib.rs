@@ -20,7 +20,7 @@ use self::RibosomeError::*;
 use globals::*;
 use holochain_wasm_utils::{
     api_serialization::{
-        commit::{CommitEntryArgs, CommitOutputStruct},
+        commit::{CommitEntryArgs, CommitEntryResult},
         validation::*,
     },
     memory_serialization::*, memory_allocation::*,
@@ -287,7 +287,7 @@ pub fn commit_entry(
     if let Err(err_str) = result {
         return Err(RibosomeError::RibosomeFailed(err_str));
     }
-    let output: CommitOutputStruct = result.unwrap();
+    let output: CommitEntryResult = result.unwrap();
 
     // Free result & input allocations and all allocations made inside commit()
     mem_stack
