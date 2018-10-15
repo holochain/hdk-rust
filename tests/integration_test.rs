@@ -22,7 +22,7 @@ pub fn create_test_cap_with_fn_names(fn_names: Vec<&str>) -> Capability {
 fn start_holochain_instance() -> (Holochain, Arc<Mutex<TestLogger>>) {
     // Setup the holochain instance
     let wasm =
-        create_wasm_from_file("wasm-test/target/wasm32-unknown-unknown/debug/test_globals.wasm");
+        create_wasm_from_file("wasm-test/target/wasm32-unknown-unknown/release/test_globals.wasm");
     let capabability = create_test_cap_with_fn_names(vec![
         "check_global",
         "check_commit_entry",
@@ -60,7 +60,7 @@ fn can_commit_entry() {
     );
     println!("\t result = {:?}", result);
     assert!(result.is_ok(), "result = {:?}", result);
-    assert_eq!(result.unwrap(),r#"{"address":"QmYURqXPNfifiBhFcoQ66SazMwnjDsRNCM1RhJte3jNSBT"}"#);
+    assert_eq!(result.unwrap(),r#"{"address":"QmZi7c1G2qAN6Y5wxHDB9fLhSaSVBJe28ZVkiPraLEcvou"}"#);
 }
 
 #[test]
@@ -75,7 +75,7 @@ fn can_commit_entry_macro() {
     );
     println!("\t result = {:?}", result);
     assert!(result.is_ok(), "\t result = {:?}", result);
-    assert_eq!(result.unwrap(),r#"{"address":"QmYURqXPNfifiBhFcoQ66SazMwnjDsRNCM1RhJte3jNSBT"}"#);
+    assert_eq!(result.unwrap(),r#"{"address":"QmZi7c1G2qAN6Y5wxHDB9fLhSaSVBJe28ZVkiPraLEcvou"}"#);
 }
 
 #[test]
@@ -108,13 +108,13 @@ fn can_get_entry() {
         r#"{ "entry_type_name": "testEntryType", "entry_content": "{\"stuff\": \"non fail\"}" }"#,
     );
     assert!(result.is_ok(), "\t result = {:?}", result);
-    assert_eq!(result.unwrap(),"{\"address\":\"QmYURqXPNfifiBhFcoQ66SazMwnjDsRNCM1RhJte3jNSBT\"}");
+    assert_eq!(result.unwrap(),"{\"address\":\"QmZi7c1G2qAN6Y5wxHDB9fLhSaSVBJe28ZVkiPraLEcvou\"}");
 
     let result = hc.call(
         "test_zome",
         "test_cap",
         "check_get_entry",
-        r#"{"entry_hash":"QmYURqXPNfifiBhFcoQ66SazMwnjDsRNCM1RhJte3jNSBT"}"#,
+        r#"{"entry_hash":"QmZi7c1G2qAN6Y5wxHDB9fLhSaSVBJe28ZVkiPraLEcvou"}"#,
     );
     println!("\t can_get_entry result = {:?}", result);
     assert!(result.is_ok(), "\t result = {:?}", result);
@@ -144,5 +144,5 @@ fn can_invalidate_invalid_commit() {
     );
     println!("\t result = {:?}", result);
     assert!(result.is_ok(), "\t result = {:?}", result);
-    assert_eq!("{\"error\":\"Call to `hc_commit_entry()` failed: \\\"FAIL content is not allowed\\\"\"}", result.unwrap());
+    assert_eq!("{\"validation failed\":\"\\\"FAIL content is not allowed\\\"\"}", result.unwrap());
 }
