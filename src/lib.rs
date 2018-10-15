@@ -21,13 +21,13 @@ use globals::*;
 use holochain_wasm_utils::{
     api_serialization::{
         commit::{CommitEntryArgs, CommitEntryResult},
+        get_entry::{GetEntryArgs, GetEntryResult, GetResultStatus},
         validation::*,
     },
+    holochain_core_types::hash::HashString,
     memory_serialization::*, memory_allocation::*,
 };
 pub use holochain_wasm_utils::api_serialization::validation::*;
-
-pub type HashString = String;
 
 pub fn init_memory_stack(encoded_allocation_of_input: u32) {
     // Actual program
@@ -297,7 +297,7 @@ pub fn commit_entry(
     if output.validation_failure.len() > 0 {
         Err(RibosomeError::ValidationFailed(output.validation_failure))
     } else {
-        Ok(output.address.to_string())
+        Ok(HashString::from(output.address))
     }
 }
 
@@ -329,31 +329,14 @@ pub fn remove_entry<S: Into<String>>(
 
 /// implements access to low-level WASM hc_get_entry
 pub fn get_entry(entry_hash: HashString) -> Result<Option<String>, RibosomeError> {
-    #[derive(Serialize, Default)]
-    struct GetInputStruct {
-        address: String,
-    }
-
-    #[derive(Deserialize, Debug, Serialize)]
-    enum GetResultStatus {
-        Found,
-        NotFound,
-    }
-
-    #[derive(Deserialize, Debug, Serialize)]
-    struct GetAppEntryResult {
-        status: GetResultStatus,
-        entry: String,
-    }
-
     let mut mem_stack: SinglePageStack;
     unsafe {
         mem_stack = G_MEM_STACK.unwrap();
     }
 
     // Put args in struct and serialize into memory
-    let input = GetInputStruct {
-        address: entry_hash.to_string(),
+    let input = GetEntryArgs {
+        address: entry_hash,
     };
     let maybe_allocation_of_input = serialize(&mut mem_stack, input);
     if let Err(err_code) = maybe_allocation_of_input {
@@ -371,7 +354,7 @@ pub fn get_entry(entry_hash: HashString) -> Result<Option<String>, RibosomeError
     if let Err(err_str) = result {
         return Err(RibosomeError::RibosomeFailed(err_str));
     }
-    let result : GetAppEntryResult = result.unwrap();
+    let result : GetEntryResult = result.unwrap();
 
     // Free result & input allocations and all allocations made inside commit()
     mem_stack

@@ -1,6 +1,9 @@
 //! File for holding the internal/private zome api function `init_globals`
 
-use holochain_wasm_utils::memory_serialization::try_deserialize_allocation;
+use holochain_wasm_utils::{
+    holochain_core_types::hash::HashString,
+    memory_serialization::try_deserialize_allocation,
+};
 
 extern "C" {
     fn hc_init_globals(encoded_allocation_of_input: u32) -> u32;
@@ -10,11 +13,11 @@ extern "C" {
 #[derive(Deserialize, Clone)]
 pub(crate) struct AppGlobals {
     pub app_name: String,
-    pub app_dna_hash: String,
+    pub app_dna_hash: HashString,
     pub app_agent_id_str: String,
-    pub app_agent_key_hash: String,
-    pub app_agent_initial_hash: String,
-    pub app_agent_latest_hash: String,
+    pub app_agent_key_hash: HashString,
+    pub app_agent_initial_hash: HashString,
+    pub app_agent_latest_hash: HashString,
 }
 
 // HC INIT GLOBALS - Secret Api Function

@@ -10,7 +10,11 @@ extern crate boolinator;
 
 use boolinator::Boolinator;
 use hdk::globals::G_MEM_STACK;
-use holochain_wasm_utils::{error::RibosomeErrorCode, memory_serialization::*, memory_allocation::*};
+use holochain_wasm_utils::{
+    error::RibosomeErrorCode,
+    holochain_core_types::hash::HashString,
+    memory_serialization::*, memory_allocation::*
+};
 use hdk::RibosomeError;
 
 #[no_mangle]
@@ -20,11 +24,11 @@ pub extern "C" fn check_global(encoded_allocation_of_input: u32) -> u32 {
     }
 
     hdk::debug(&hdk::APP_NAME);
-    hdk::debug(&hdk::APP_DNA_HASH);
+    hdk::debug(&hdk::APP_DNA_HASH.to_string());
     hdk::debug(&hdk::APP_AGENT_ID_STR);
-    hdk::debug(&hdk::APP_AGENT_KEY_HASH);
-    hdk::debug(&hdk::APP_AGENT_INITIAL_HASH);
-    hdk::debug(&hdk::APP_AGENT_LATEST_HASH);
+    hdk::debug(&hdk::APP_AGENT_KEY_HASH.to_string());
+    hdk::debug(&hdk::APP_AGENT_INITIAL_HASH.to_string());
+    hdk::debug(&hdk::APP_AGENT_LATEST_HASH.to_string());
 
     return 0;
 }
@@ -61,7 +65,7 @@ pub extern "C" fn check_commit_entry(encoded_allocation_of_input: u32) -> u32 {
     let res = hdk::commit_entry(&input.entry_type_name, entry_content);
 
     let res_obj = match res {
-        Ok(hash_str) => CommitOutputStruct {address: hash_str},
+        Ok(hash_str) => CommitOutputStruct {address: hash_str.to_string()},
         Err(RibosomeError::RibosomeFailed(err_str)) => {
             unsafe {
                 return serialize_into_encoded_allocation(&mut G_MEM_STACK.unwrap(), err_str) as u32;
@@ -87,7 +91,7 @@ zome_functions! {
         }
     }
 
-    check_get_entry: |entry_hash: String| {
+    check_get_entry: |entry_hash: HashString| {
         let res = hdk::get_entry(entry_hash);
         match res {
             Ok(Some(entry)) => {
