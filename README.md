@@ -1,3 +1,7 @@
+# Notice: HDK Rust has been integrated into the holochain-rust repository
+
+To read up to date information, and make pull requests, go here: https://github.com/holochain/holochain-rust/tree/develop/hdk-rust. 
+
 # Holochain Development Kit for Rust-based Apps
 
 [![Project](https://img.shields.io/badge/project-holochain-blue.svg?style=flat-square)](http://holochain.org/)
